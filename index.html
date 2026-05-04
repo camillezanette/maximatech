@@ -354,6 +354,21 @@ tr:hover td{background:var(--bg);}
 
     <!-- ABA VENDEDORES -->
     <div class="tab-content" id="tab-vendedores">
+
+      <!-- Filtros ranking -->
+      <div class="filters" style="margin-bottom:16px;">
+        <span class="filter-label">Segmento</span>
+        <button class="fbtn on" data-vgroup="vtipo" data-vval="all">Todos</button>
+        <button class="fbtn" data-vgroup="vtipo" data-vval="Base">Base</button>
+        <button class="fbtn" data-vgroup="vtipo" data-vval="Novos">Novos</button>
+        <div class="fsep"></div>
+        <span class="filter-label">Ordenar por</span>
+        <button class="fbtn on" data-vgroup="vsort" data-vval="pct">Atingimento</button>
+        <button class="fbtn" data-vgroup="vsort" data-vval="total_proj">Receita proj.</button>
+        <button class="fbtn" data-vgroup="vsort" data-vval="gap">Gap</button>
+        <button class="fbtn" data-vgroup="vsort" data-vval="deals">Deals</button>
+      </div>
+
       <div class="vendedor-cards" id="vendedor-cards"></div>
       <div id="vendedor-deals-container"></div>
     </div>
@@ -381,7 +396,10 @@ function nomeAbrev(n) {
 
 var F = {etapa:'all', tipo:'all', search:''};
 var SK = 'receita_esperada', SD = -1;
+var VF = {vtipo:'all', vsort:'pct'};
+var VSD = -1;
 var selectedVendedor = null;
+var VDK = 'receita_esperada', VDSD = -1;
 
 function login() {
   if (document.getElementById('pwd').value === 'maxima2026') {
@@ -513,7 +531,15 @@ function render() {
 
 /* ── VENDEDORES ── */
 function renderVendedores() {
-  var sorted = RANKING.slice().sort(function(a,b){return b.pct - a.pct;});
+  var sorted = RANKING.slice().filter(function(r) {
+    if (VF.vtipo === 'all') return true;
+    // Identificar tipo pelo nome do vendedor nos deals
+    var vdeals = DEALS.filter(function(d){return d.vendedor === r.vendedor;});
+    return vdeals.some(function(d){return d.tipo === VF.vtipo;});
+  }).sort(function(a,b) {
+    var av = a[VF.vsort], bv = b[VF.vsort];
+    return av < bv ? VSD : av > bv ? -VSD : 0;
+  });
   var container = document.getElementById('vendedor-cards');
   container.innerHTML = sorted.map(function(r) {
     var pct = r.pct;
@@ -564,7 +590,11 @@ function renderVendedores() {
 }
 
 function renderVendedorDeals(nome) {
-  var deals = DEALS.filter(function(d){return d.vendedor === nome;});
+  var deals = DEALS.filter(function(d){return d.vendedor === nome;}).slice().sort(function(a,b){
+    var av = a[VDK], bv = b[VDK];
+    if (typeof av === 'string'){av=av.toLowerCase();bv=bv.toLowerCase();}
+    return av < bv ? VDSD : av > bv ? -VDSD : 0;
+  });
   var EB = {'Demonstração':'b-demo','Confecção':'b-conf','Proposta':'b-prop','Xeque-Mate':'b-xm'};
   var EL = {'Demonstração':'Demo','Confecção':'Confecção','Proposta':'Proposta','Xeque-Mate':'⚑ Xeque-Mate'};
   var container = document.getElementById('vendedor-deals-container');
@@ -599,18 +629,38 @@ function renderVendedorDeals(nome) {
     + '<div class="table-wrap" style="border:none;border-radius:0;">'
     + '<table>'
     + '<thead><tr>'
-    + '<th>Segmento</th><th>Origem</th><th>Etapa</th>'
-    + '<th class="tr">Prob.</th><th class="tr">MRR</th><th class="tr">Setup</th>'
-    + '<th class="tr">Total deal</th><th class="tr">Receita esp.</th>'
-    + '<th class="tr">Dias na etapa</th><th>Fechamento proj.</th><th>HubSpot</th>'
+    + '<th data-vdsort="tipo">Segmento</th>'
+    + '<th data-vdsort="origem">Origem</th>'
+    + '<th data-vdsort="etapa">Etapa</th>'
+    + '<th class="tr" data-vdsort="probabilidade">Prob.</th>'
+    + '<th class="tr" data-vdsort="mrr">MRR</th>'
+    + '<th class="tr" data-vdsort="setup">Setup</th>'
+    + '<th class="tr" data-vdsort="total">Total deal</th>'
+    + '<th class="tr" data-vdsort="receita_esperada">Receita esp.</th>'
+    + '<th class="tr" data-vdsort="dias_na_etapa">Dias na etapa</th>'
+    + '<th data-vdsort="data_fechamento_projetada">Fechamento proj.</th>'
+    + '<th>HubSpot</th>'
     + '</tr></thead>'
-    + '<tbody>'+rows+'</tbody>'
+    + '<tbody id="vd-tbody-'+nome.replace(/ /g,'-')+'">'+rows+'</tbody>'
     + '</table></div></div>';
 
   document.getElementById('vds-close').addEventListener('click', function() {
     selectedVendedor = null;
+    VDK = 'receita_esperada'; VDSD = -1;
     document.getElementById('vendedor-deals-container').innerHTML = '';
     document.querySelectorAll('.v-card').forEach(function(c){c.classList.remove('selected');});
+  });
+
+  // Sort nos headers da tabela de deals
+  document.querySelectorAll('[data-vdsort]').forEach(function(th) {
+    th.style.cursor = 'pointer';
+    th.addEventListener('click', function() {
+      var k = th.getAttribute('data-vdsort');
+      if (VDK === k) VDSD *= -1; else { VDK = k; VDSD = -1; }
+      document.querySelectorAll('[data-vdsort]').forEach(function(t){t.classList.remove('sorted');});
+      th.classList.add('sorted');
+      renderVendedorDeals(selectedVendedor);
+    });
   });
 }
 
@@ -646,6 +696,22 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('fsearch').addEventListener('input', function() {
     F.search = this.value.toLowerCase();
     render();
+  });
+
+  // Filtros e sort da aba vendedores
+  document.querySelectorAll('[data-vgroup]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var group = btn.getAttribute('data-vgroup');
+      var val   = btn.getAttribute('data-vval');
+      VF[group] = val;
+      if (group === 'vsort') {
+        VSD = (VF.vsort === val && VSD === -1) ? 1 : -1;
+        VF.vsort = val;
+      }
+      document.querySelectorAll('[data-vgroup="'+group+'"]').forEach(function(b){b.classList.remove('on');});
+      btn.classList.add('on');
+      renderVendedores();
+    });
   });
 
   // Ordenação
