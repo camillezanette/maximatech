@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forecast Comercial — MáximaTech</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700&display=swap');
+
+  :root {
+    --primary: #4b55ff;
+    --primary-dim: rgba(75,85,255,0.12);
+    --secondary: #00d556;
+    --secondary-dim: rgba(0,213,86,0.12);
+    --pink: #ff008d;
+    --pink-dim: rgba(255,0,141,0.10);
+    --dark: #28283f;
+    --bg: #f1f3ff;
+    --white: #ffffff;
+    --border: rgba(75,85,255,0.14);
+    --text: #28283f;
+    --text-mid: #5a5b7a;
+    --text-soft: #9a9bbf;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ── LOGIN ── */
+  #login-screen {
+    position: fixed; inset: 0; background: var(--dark);
+    display: flex; align-items: center; justify-content: center; z-index: 999;
+  }
+  .login-box {
+    background: #1e1e32; border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; padding: 48px 40px; width: 360px; text-align: center;
+  }
+  .login-logo {
+    width: 44px; height: 44px; background: var(--primary);
+    border-radius: 12px; margin: 0 auto 24px; display: flex;
+    align-items: center; justify-content: center;
+  }
+  .login-logo svg { width: 22px; height: 22px; fill: white; }
+  .login-title { font-size: 18px; font-weight: 600; color: white; margin-bottom: 4px; }
+  .login-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-bottom: 32px; }
+  .login-box input {
+    width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; padding: 13px 16px; color: white; font-family: var(--mono);
+    font-size: 14px; letter-spacing: 0.1em; outline: none; margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+  .login-box input:focus { border-color: var(--primary); }
+  .login-box input::placeholder { color: rgba(255,255,255,0.2); letter-spacing: 0; }
+  .login-btn {
+    width: 100%; background: var(--primary); border: none; border-radius: 10px;
+    padding: 13px; color: white; font-family: var(--sans); font-size: 14px;
+    font-weight: 600; cursor: pointer; transition: opacity 0.2s;
+  }
+  .login-btn:hover { opacity: 0.85; }
+  .login-error { font-size: 12px; color: var(--pink); margin-top: 10px; display: none; }
+
+  /* ── LAYOUT ── */
+  #app { display: none; }
+  .topbar {
+    background: var(--dark); padding: 0 32px; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 12px; }
+  .topbar-brand { font-size: 15px; font-weight: 600; color: white; }
+  .topbar-tag {
+    font-size: 10px; font-weight: 500; background: var(--primary-dim);
+    color: #8b91ff; padding: 3px 8px; border-radius: 20px; letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .topbar-right { display: flex; align-items: center; gap: 16px; }
+  .snapshot-selector {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
+    color: white; font-family: var(--mono); font-size: 12px; padding: 6px 10px;
+    border-radius: 8px; outline: none; cursor: pointer;
+  }
+  .snapshot-selector option { background: var(--dark); }
+  .topbar-date { font-family: var(--mono); font-size: 12px; color: rgba(255,255,255,0.35); }
+
+  .main { padding: 28px 32px; max-width: 1400px; margin: 0 auto; }
+
+  /* ── CARDS RESUMO ── */
+  .summary-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 24px; }
+  .sum-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px 18px;
+  }
+  .sum-card.accent-blue { border-top: 3px solid var(--primary); }
+  .sum-card.accent-green { border-top: 3px solid var(--secondary); }
+  .sum-card.accent-pink { border-top: 3px solid var(--pink); }
+  .sum-label { font-size: 10px; font-weight: 500; color: var(--text-soft); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 6px; }
+  .sum-value { font-size: 20px; font-weight: 600; color: var(--text); font-family: var(--mono); }
+  .sum-sub { font-size: 11px; color: var(--text-soft); margin-top: 3px; }
+  .sum-pct { font-size: 11px; font-weight: 600; margin-top: 4px; }
+  .sum-pct.over { color: var(--secondary); }
+  .sum-pct.under { color: var(--pink); }
+
+  /* ── META PROGRESS ── */
+  .meta-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+  .meta-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px 18px;
+  }
+  .meta-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .meta-title { font-size: 11px; font-weight: 500; color: var(--text-mid); text-transform: uppercase; letter-spacing: 0.06em; }
+  .meta-pct { font-size: 13px; font-weight: 600; }
+  .meta-pct.over { color: var(--secondary); }
+  .meta-pct.under { color: var(--pink); }
+  .meta-values { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-soft); margin-bottom: 8px; }
+  .meta-values span:first-child { font-weight: 600; color: var(--text); font-family: var(--mono); }
+  .prog-wrap { height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+  .prog-fill { height: 6px; border-radius: 3px; background: var(--primary); transition: width 0.6s ease; }
+  .prog-fill.over { background: var(--secondary); }
+
+  /* ── FILTROS ── */
+  .filters {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 14px; padding: 14px 18px; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .filter-label { font-size: 11px; color: var(--text-soft); font-weight: 500; margin-right: 4px; }
+  .filter-btn {
+    font-family: var(--sans); font-size: 12px; font-weight: 500;
+    padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border);
+    background: transparent; color: var(--text-mid); cursor: pointer; transition: all 0.15s;
+  }
+  .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .filter-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
+  .filter-sep { width: 1px; height: 20px; background: var(--border); }
+  .search-input {
+    font-family: var(--sans); font-size: 12px; padding: 5px 12px;
+    border: 1px solid var(--border); border-radius: 20px; outline: none;
+    color: var(--text); background: transparent; width: 180px; transition: border-color 0.15s;
+  }
+  .search-input:focus { border-color: var(--primary); }
+  .filter-count { font-size: 11px; color: var(--text-soft); margin-left: auto; font-family: var(--mono); }
+
+  /* ── TABELA ── */
+  .table-wrap {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead { background: var(--bg); }
+  th {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.07em; color: var(--text-soft);
+    text-transform: uppercase; padding: 11px 16px; text-align: left;
+    border-bottom: 1px solid var(--border); cursor: pointer; white-space: nowrap;
+    user-select: none;
+  }
+  th:hover { color: var(--primary); }
+  th.sorted { color: var(--primary); }
+  th .sort-arrow { margin-left: 4px; opacity: 0.5; }
+  th.sorted .sort-arrow { opacity: 1; }
+  td {
+    padding: 11px 16px; border-bottom: 1px solid var(--border);
+    color: var(--text); vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg); }
+  .td-mono { font-family: var(--mono); font-size: 12px; }
+  .td-right { text-align: right; }
+  .td-center { text-align: center; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 500;
+  }
+  .badge-demo { background: #eef0ff; color: #3941c8; }
+  .badge-conf { background: #fff4e0; color: #a05a00; }
+  .badge-prop { background: var(--primary-dim); color: var(--primary); }
+  .badge-xm   { background: var(--secondary-dim); color: #006e3a; }
+  .badge-base { background: var(--secondary-dim); color: #006e3a; }
+  .badge-novo { background: var(--primary-dim); color: var(--primary); }
+
+  .prob-pill {
+    display: inline-block; padding: 3px 9px; border-radius: 20px;
+    font-family: var(--mono); font-size: 11px; font-weight: 500;
+  }
+  .prob-high { background: var(--secondary-dim); color: #006e3a; }
+  .prob-mid  { background: var(--primary-dim); color: var(--primary); }
+  .prob-low  { background: var(--pink-dim); color: var(--pink); }
+
+  .vendedor-chip {
+    display: inline-block; width: 22px; height: 22px; border-radius: 50%;
+    font-size: 10px; font-weight: 700; color: white; text-align: center;
+    line-height: 22px; margin-right: 6px; flex-shrink: 0;
+  }
+  .vendedor-cell { display: flex; align-items: center; }
+
+  .no-results {
+    text-align: center; padding: 48px; color: var(--text-soft); font-size: 14px;
+  }
+
+  /* ── HISTÓRICO ── */
+  .history-section { margin-top: 24px; }
+  .section-title {
+    font-size: 11px; font-weight: 600; color: var(--text-soft); text-transform: uppercase;
+    letter-spacing: 0.08em; margin-bottom: 12px;
+  }
+  .history-timeline {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 14px; padding: 20px; display: flex; gap: 0; overflow-x: auto;
+  }
+  .history-point {
+    flex: 1; min-width: 120px; text-align: center; position: relative;
+    padding: 0 8px; cursor: pointer;
+  }
+  .history-point::before {
+    content: ''; position: absolute; top: 12px; left: 0; right: 0;
+    height: 1px; background: var(--border); z-index: 0;
+  }
+  .history-point:first-child::before { left: 50%; }
+  .history-point:last-child::before { right: 50%; }
+  .history-dot {
+    width: 24px; height: 24px; border-radius: 50%; background: var(--bg);
+    border: 2px solid var(--border); margin: 0 auto 8px; position: relative; z-index: 1;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+  }
+  .history-dot.active { background: var(--primary); border-color: var(--primary); }
+  .history-dot.active::after {
+    content: ''; width: 8px; height: 8px; background: white; border-radius: 50%;
+  }
+  .history-date { font-family: var(--mono); font-size: 10px; color: var(--text-soft); margin-bottom: 4px; }
+  .history-val { font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--text); }
+  .history-delta { font-size: 10px; font-weight: 500; margin-top: 2px; }
+  .history-delta.up { color: var(--secondary); }
+  .history-delta.down { color: var(--pink); }
+
+  .footer { text-align: center; padding: 24px 0 32px; font-size: 11px; color: var(--text-soft); font-family: var(--mono); }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <div class="login-title">Forecast Comercial</div>
+    <div class="login-sub">MáximaTech · Acesso restrito</div>
+    <input type="password" id="pwd-input" placeholder="Senha" autocomplete="off" />
+    <button class="login-btn" onclick="checkPassword()">Entrar</button>
+    <div class="login-error" id="login-error">Senha incorreta</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-brand">MáximaTech</div>
+      <div class="topbar-tag">Forecast Comercial</div>
+    </div>
+    <div class="topbar-right">
+      <select class="snapshot-selector" id="snapshot-select" onchange="loadSnapshot(this.value)">
+        <option value="forecast_2026-05-04">04 Mai 2026</option>
+      </select>
+      <div class="topbar-date" id="topbar-date">—</div>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- RESUMO -->
+    <div class="summary-grid" id="summary-grid">
+      <div class="sum-card accent-blue">
+        <div class="sum-label">Total esperado</div>
+        <div class="sum-value" id="s-total">—</div>
+        <div class="sum-sub" id="s-deals">— deals</div>
+      </div>
+      <div class="sum-card accent-blue">
+        <div class="sum-label">MRR esperado</div>
+        <div class="sum-value" id="s-mrr">—</div>
+        <div class="sum-pct over" id="s-mrr-pct">—</div>
+      </div>
+      <div class="sum-card accent-blue">
+        <div class="sum-label">Setup esperado</div>
+        <div class="sum-value" id="s-setup">—</div>
+        <div class="sum-pct over" id="s-setup-pct">—</div>
+      </div>
+      <div class="sum-card accent-green">
+        <div class="sum-label">Base</div>
+        <div class="sum-value" id="s-base">—</div>
+        <div class="sum-sub" id="s-base-deals">—</div>
+      </div>
+      <div class="sum-card accent-green">
+        <div class="sum-label">Nova empresa</div>
+        <div class="sum-value" id="s-novos">—</div>
+        <div class="sum-sub" id="s-novos-deals">—</div>
+      </div>
+      <div class="sum-card accent-pink">
+        <div class="sum-label">Meta total</div>
+        <div class="sum-value" id="s-meta">—</div>
+        <div class="sum-pct over" id="s-meta-pct">—</div>
+      </div>
+    </div>
+
+    <!-- METAS -->
+    <div class="meta-row">
+      <div class="meta-card">
+        <div class="meta-top">
+          <div class="meta-title">MRR</div>
+          <div class="meta-pct over" id="m-mrr-pct">—</div>
+        </div>
+        <div class="meta-values">
+          <span id="m-mrr-proj">—</span>
+          <span id="m-mrr-goal">meta —</span>
+        </div>
+        <div class="prog-wrap"><div class="prog-fill over" id="m-mrr-bar" style="width:0%"></div></div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-top">
+          <div class="meta-title">Setup</div>
+          <div class="meta-pct over" id="m-setup-pct">—</div>
+        </div>
+        <div class="meta-values">
+          <span id="m-setup-proj">—</span>
+          <span id="m-setup-goal">meta —</span>
+        </div>
+        <div class="prog-wrap"><div class="prog-fill over" id="m-setup-bar" style="width:0%"></div></div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-top">
+          <div class="meta-title">Receita total</div>
+          <div class="meta-pct over" id="m-total-pct">—</div>
+        </div>
+        <div class="meta-values">
+          <span id="m-total-proj">—</span>
+          <span id="m-total-goal">meta —</span>
+        </div>
+        <div class="prog-wrap"><div class="prog-fill over" id="m-total-bar" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="filters">
+      <span class="filter-label">Etapa</span>
+      <button class="filter-btn active" data-filter="etapa" data-value="all" onclick="setFilter('etapa','all',this)">Todas</button>
+      <button class="filter-btn" data-filter="etapa" data-value="Demonstração" onclick="setFilter('etapa','Demonstração',this)">Demo</button>
+      <button class="filter-btn" data-filter="etapa" data-value="Confecção" onclick="setFilter('etapa','Confecção',this)">Confecção</button>
+      <button class="filter-btn" data-filter="etapa" data-value="Proposta" onclick="setFilter('etapa','Proposta',this)">Proposta</button>
+      <button class="filter-btn" data-filter="etapa" data-value="Xeque-Mate" onclick="setFilter('etapa','Xeque-Mate',this)">Xeque-Mate</button>
+      <div class="filter-sep"></div>
+      <span class="filter-label">Segmento</span>
+      <button class="filter-btn active" data-filter="tipo" data-value="all" onclick="setFilter('tipo','all',this)">Todos</button>
+      <button class="filter-btn" data-filter="tipo" data-value="Base" onclick="setFilter('tipo','Base',this)">Base</button>
+      <button class="filter-btn" data-filter="tipo" data-value="Novos" onclick="setFilter('tipo','Novos',this)">Novos</button>
+      <div class="filter-sep"></div>
+      <input class="search-input" type="text" placeholder="Buscar vendedor..." oninput="setSearch(this.value)" />
+      <span class="filter-count" id="filter-count">— deals</span>
+    </div>
+
+    <!-- TABELA -->
+    <div class="table-wrap">
+      <table id="deals-table">
+        <thead>
+          <tr>
+            <th onclick="sortBy('vendedor')">Vendedor <span class="sort-arrow">↕</span></th>
+            <th onclick="sortBy('tipo')">Segmento <span class="sort-arrow">↕</span></th>
+            <th onclick="sortBy('origem')">Origem <span class="sort-arrow">↕</span></th>
+            <th onclick="sortBy('etapa')">Etapa <span class="sort-arrow">↕</span></th>
+            <th onclick="sortBy('probabilidade')" class="td-right">Prob. <span class="sort-arrow">↕</span></th>
+            <th onclick="sortBy('mrr')" class="td-right">MRR <span class="sort-arrow">↕</span></th>
+            <th onclick="sortBy('setup')" class="td-right">Setup <span class="sort-arrow">↕</span></th>
+            <th onclick="sortBy('total')" class="td-right">Total deal <span class="sort-arrow">↕</span></th>
+            <th onclick="sortBy('receita_esperada')" class="td-right">Receita esp. <span class="sort-arrow">↕</span></th>
+            <th onclick="sortBy('dias_na_etapa')" class="td-right">Dias na etapa <span class="sort-arrow">↕</span></th>
+            <th onclick="sortBy('data_fechamento_projetada')">Fechamento proj. <span class="sort-arrow">↕</span></th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+
+    <!-- HISTÓRICO -->
+    <div class="history-section">
+      <div class="section-title">Histórico de snapshots</div>
+      <div class="history-timeline" id="history-timeline">
+        <div style="text-align:center;width:100%;padding:16px;color:var(--text-soft);font-size:13px;">
+          Adicione novos snapshots semanais para ver a evolução do pipeline aqui.
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="footer">MáximaTech · Forecast Comercial · Atualizado em <span id="footer-date">—</span></div>
+</div>
+
+<script>
+// ── SENHA ──
+const SENHA = 'maxima2026';
+function checkPassword() {
+  const v = document.getElementById('pwd-input').value;
+  if (v === SENHA) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    initApp();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('pwd-input').value = '';
+    document.getElementById('pwd-input').focus();
+  }
+}
+document.getElementById('pwd-input').addEventListener('keydown', e => { if(e.key==='Enter') checkPassword(); });
+
+// ── DADOS ──
+const SNAPSHOTS = {};
+
+// Snapshot embutido
+SNAPSHOTS['forecast_2026-05-04'] = SNAPSHOT_DATA_PLACEHOLDER;
+
+// ── ESTADO ──
+let currentDeals = [];
+let filters = { etapa: 'all', tipo: 'all', search: '' };
+let sortKey = 'receita_esperada';
+let sortDir = -1;
+
+// ── CORES VENDEDOR ──
+const vendedorCores = {};
+const palette = ['#4b55ff','#00d556','#ff008d','#f59e0b','#8b5cf6','#06b6d4','#ef4444','#10b981'];
+function getVendedorCor(nome) {
+  if (!vendedorCores[nome]) {
+    const idx = Object.keys(vendedorCores).length % palette.length;
+    vendedorCores[nome] = palette[idx];
+  }
+  return vendedorCores[nome];
+}
+function iniciais(nome) {
+  return nome.split(' ').slice(0,2).map(p=>p[0]).join('').toUpperCase();
+}
+
+// ── FORMATAÇÃO ──
+const fmt = v => 'R$ ' + Number(v).toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:0});
+const fmtPct = v => v.toFixed(1) + '%';
+
+// ── INIT ──
+function initApp() {
+  loadSnapshot('forecast_2026-05-04');
+  buildHistory();
+}
+
+function loadSnapshot(key) {
+  const snap = SNAPSHOTS[key];
+  if (!snap) return;
+  currentDeals = snap.deals;
+  renderSummary(snap);
+  renderTable();
+  document.getElementById('topbar-date').textContent = snap.data_snapshot;
+  document.getElementById('footer-date').textContent = snap.data_snapshot;
+}
+
+// ── RESUMO ──
+function renderSummary(snap) {
+  const r = snap.resumo;
+  document.getElementById('s-total').textContent  = fmt(r.receita_esperada);
+  document.getElementById('s-deals').textContent  = r.total_deals + ' deals';
+  document.getElementById('s-mrr').textContent    = fmt(r.mrr_esperado);
+  document.getElementById('s-setup').textContent  = fmt(r.setup_esperado);
+  document.getElementById('s-meta').textContent   = fmt(r.meta_total);
+
+  const base  = snap.deals.filter(d=>d.tipo==='Base');
+  const novos = snap.deals.filter(d=>d.tipo==='Novos');
+  const sumBase  = base.reduce((a,d)=>a+d.receita_esperada,0);
+  const sumNovos = novos.reduce((a,d)=>a+d.receita_esperada,0);
+  document.getElementById('s-base').textContent       = fmt(sumBase);
+  document.getElementById('s-base-deals').textContent = base.length + ' deals';
+  document.getElementById('s-novos').textContent      = fmt(sumNovos);
+  document.getElementById('s-novos-deals').textContent= novos.length + ' deals';
+
+  const pMrr   = r.mrr_esperado / r.meta_mrr * 100;
+  const pSetup = r.setup_esperado / r.meta_setup * 100;
+  const pTotal = r.receita_esperada / r.meta_total * 100;
+
+  document.getElementById('s-mrr-pct').textContent   = fmtPct(pMrr) + ' da meta';
+  document.getElementById('s-setup-pct').textContent = fmtPct(pSetup) + ' da meta';
+  document.getElementById('s-meta-pct').textContent  = fmtPct(pTotal) + ' da meta';
+
+  // Barras
+  ['mrr','setup','total'].forEach(k => {
+    const pct = k==='mrr'?pMrr : k==='setup'?pSetup : pTotal;
+    const proj = k==='mrr'?r.mrr_esperado : k==='setup'?r.setup_esperado : r.receita_esperada;
+    const goal = k==='mrr'?r.meta_mrr : k==='setup'?r.meta_setup : r.meta_total;
+    document.getElementById(`m-${k}-pct`).textContent  = fmtPct(pct);
+    document.getElementById(`m-${k}-proj`).textContent = fmt(proj);
+    document.getElementById(`m-${k}-goal`).textContent = 'meta ' + fmt(goal);
+    document.getElementById(`m-${k}-bar`).style.width  = Math.min(pct,100) + '%';
+  });
+}
+
+// ── FILTROS ──
+function setFilter(key, value, btn) {
+  filters[key] = value;
+  document.querySelectorAll(`[data-filter="${key}"]`).forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+function setSearch(v) {
+  filters.search = v.toLowerCase();
+  renderTable();
+}
+
+// ── SORT ──
+function sortBy(key) {
+  if (sortKey === key) sortDir *= -1;
+  else { sortKey = key; sortDir = -1; }
+  document.querySelectorAll('th').forEach(th => th.classList.remove('sorted'));
+  event.currentTarget.classList.add('sorted');
+  renderTable();
+}
+
+// ── TABELA ──
+function renderTable() {
+  let deals = currentDeals.filter(d => {
+    if (filters.etapa !== 'all' && d.etapa !== filters.etapa) return false;
+    if (filters.tipo  !== 'all' && d.tipo  !== filters.tipo)  return false;
+    if (filters.search && !d.vendedor.toLowerCase().includes(filters.search)) return false;
+    return true;
+  });
+
+  deals.sort((a,b) => {
+    let av = a[sortKey], bv = b[sortKey];
+    if (typeof av === 'string') av = av.toLowerCase(), bv = bv.toLowerCase();
+    return av < bv ? sortDir : av > bv ? -sortDir : 0;
+  });
+
+  document.getElementById('filter-count').textContent = deals.length + ' deals';
+
+  const etapaBadge = {
+    'Demonstração': 'badge-demo',
+    'Confecção':    'badge-conf',
+    'Proposta':     'badge-prop',
+    'Xeque-Mate':  'badge-xm',
+  };
+  const etapaLabel = {
+    'Demonstração': 'Demo',
+    'Confecção':    'Confecção',
+    'Proposta':     'Proposta',
+    'Xeque-Mate':  '⚑ Xeque-Mate',
+  };
+
+  const body = document.getElementById('table-body');
+  if (deals.length === 0) {
+    body.innerHTML = `<tr><td colspan="11" class="no-results">Nenhum deal encontrado com os filtros selecionados.</td></tr>`;
+    return;
+  }
+
+  body.innerHTML = deals.map(d => {
+    const cor = getVendedorCor(d.vendedor);
+    const ini = iniciais(d.vendedor);
+    const probClass = d.probabilidade >= 60 ? 'prob-high' : d.probabilidade >= 35 ? 'prob-mid' : 'prob-low';
+    const etBadge = etapaBadge[d.etapa] || 'badge-demo';
+    const etLabel = etapaLabel[d.etapa] || d.etapa;
+    const tipoClass = d.tipo === 'Base' ? 'badge-base' : 'badge-novo';
+    const diasAlert = d.dias_na_etapa > 20 ? 'color:#ff008d;font-weight:600' : '';
+
+    return `<tr>
+      <td>
+        <div class="vendedor-cell">
+          <div class="vendedor-chip" style="background:${cor}">${ini}</div>
+          <span style="font-size:12px">${d.vendedor.split(' ')[0]} ${d.vendedor.split(' ').slice(-1)[0]}</span>
+        </div>
+      </td>
+      <td><span class="badge ${tipoClass}">${d.tipo}</span></td>
+      <td style="font-size:12px;color:var(--text-mid)">${d.origem}</td>
+      <td><span class="badge ${etBadge}">${etLabel}</span></td>
+      <td class="td-right"><span class="prob-pill ${probClass}">${d.probabilidade}%</span></td>
+      <td class="td-right td-mono">${fmt(d.mrr)}</td>
+      <td class="td-right td-mono">${fmt(d.setup)}</td>
+      <td class="td-right td-mono">${fmt(d.total)}</td>
+      <td class="td-right td-mono" style="font-weight:600;color:var(--primary)">${fmt(d.receita_esperada)}</td>
+      <td class="td-right td-mono" style="${diasAlert}">${d.dias_na_etapa}d</td>
+      <td class="td-mono" style="font-size:11px">${d.data_fechamento_projetada}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── HISTÓRICO ──
+function buildHistory() {
+  const keys = Object.keys(SNAPSHOTS).sort();
+  if (keys.length < 2) return;
+  const tl = document.getElementById('history-timeline');
+  tl.innerHTML = keys.map((k, i) => {
+    const snap = SNAPSHOTS[k];
+    const r = snap.resumo;
+    const prev = i > 0 ? SNAPSHOTS[keys[i-1]].resumo : null;
+    const delta = prev ? r.receita_esperada - prev.receita_esperada : null;
+    const deltaHtml = delta !== null
+      ? `<div class="history-delta ${delta>=0?'up':'down'}">${delta>=0?'↑':'↓'} ${fmt(Math.abs(delta))}</div>`
+      : '';
+    return `<div class="history-point" onclick="loadSnapshot('${k}')">
+      <div class="history-dot ${k===Object.keys(SNAPSHOTS).pop()?'active':''}"></div>
+      <div class="history-date">${snap.data_snapshot}</div>
+      <div class="history-val">${fmt(r.receita_esperada)}</div>
+      ${deltaHtml}
+    </div>`;
+  }).join('');
+}
+</script>
+
+<script>
+// Dados do snapshot embutidos diretamente
+const SNAPSHOT_DATA_PLACEHOLDER = {"data_snapshot": "2026-05-04", "resumo": {"total_deals": 86, "mrr_esperado": 94287.29, "setup_esperado": 464579.88, "receita_esperada": 556850.68, "meta_mrr": 73800, "meta_setup": 364287, "meta_total": 438086}, "deals": [{"id": "55454963003", "empresa": "", "vendedor": "Vanessa Carvalho Borges", "tipo": "Novos", "origem": "Inbound", "etapa": "Proposta", "probabilidade": 44.1, "mrr": 690.8, "setup": 9945.0, "total": 10635.8, "mrr_esperado": 304.64, "setup_esperado": 4385.74, "receita_esperada": 4690.39, "data_entrada_etapa": "2026-02-09", "dias_na_etapa": 83.3, "data_fechamento_projetada": "2026-05-04"}, {"id": "55478383535", "empresa": "", "vendedor": "Pedro Lustosa", "tipo": "Base", "origem": "Indicação", "etapa": "Xeque-Mate", "probabilidade": 88.2, "mrr": 1950.0, "setup": 1632.15, "total": 1950.0, "mrr_esperado": 1719.9, "setup_esperado": 1439.56, "receita_esperada": 1719.9, "data_entrada_etapa": "2026-02-26", "dias_na_etapa": 66.2, "data_fechamento_projetada": "2026-05-04"}, {"id": "55571174694", "empresa": "", "vendedor": "Nathália Feliciana Gonçalves", "tipo": "Base", "origem": "Outbound", "etapa": "Proposta", "probabilidade": 61.2, "mrr": 2249.0, "setup": 11500.0, "total": 13749.0, "mrr_esperado": 1376.39, "setup_esperado": 7038.0, "receita_esperada": 8414.39, "data_entrada_etapa": "2026-03-24", "dias_na_etapa": 40.3, "data_fechamento_projetada": "2026-05-04"}, {"id": "55757955388", "empresa": "", "vendedor": "Wesley Caldas", "tipo": "Novos", "origem": "Outbound", "etapa": "Proposta", "probabilidade": 44.1, "mrr": 1139.25, "setup": 28290.0, "total": 29429.25, "mrr_esperado": 502.41, "setup_esperado": 12475.89, "receita_esperada": 12978.3, "data_entrada_etapa": "2026-02-09", "dias_na_etapa": 83.4, "data_fechamento_projetada": "2026-05-04"}, {"id": "55688206007", "empresa": "", "vendedor": "Wesley Caldas", "tipo": "Novos", "origem": "Inbound", "etapa": "Xeque-Mate", "probabilidade": 78.3, "mrr": 2159.9, "setup": 20013.5, "total": 22173.4, "mrr_esperado": 1691.2, "setup_esperado": 15670.57, "receita_esperada": 17361.77, "data_entrada_etapa": "2026-02-23", "dias_na_etapa": 69.3, "data_fechamento_projetada": "2026-05-04"}, {"id": "55815005211", "empresa": "", "vendedor": "Pedro Lustosa", "tipo": "Base", "origem": "Indicação", "etapa": "Confecção", "probabilidade": 50.9, "mrr": 820.0, "setup": 2912.0, "total": 3732.0, "mrr_esperado": 417.38, "setup_esperado": 1482.21, "receita_esperada": 1899.59, "data_entrada_etapa": "2026-02-23", "dias_na_etapa": 69.4, "data_fechamento_projetada": "2026-05-04"}, {"id": "55815428939", "empresa": "", "vendedor": "Vanessa Carvalho Borges", "tipo": "Novos", "origem": "Indicação", "etapa": "Xeque-Mate", "probabilidade": 78.3, "mrr": 4864.0, "setup": 15225.0, "total": 20089.0, "mrr_esperado": 3808.51, "setup_esperado": 11921.18, "receita_esperada": 15729.69, "data_entrada_etapa": "2026-04-23", "dias_na_etapa": 10.2, "data_fechamento_projetada": "2026-05-04"}, {"id": "55827659426", "empresa": "", "vendedor": "João Tavares da Costa", "tipo": "Novos", "origem": "Inbound", "etapa": "Proposta", "probabilidade": 44.1, "mrr": 3115.35, "setup": 13800.0, "total": 16915.35, "mrr_esperado": 1373.87, "setup_esperado": 6085.8, "receita_esperada": 7459.67, "data_entrada_etapa": "2026-02-15", "dias_na_etapa": 77.4, "data_fechamento_projetada": "2026-05-04"}, {"id": "55922612369", "empresa": "", "vendedor": "Aline Gomes dos Santos", "tipo": "Base", "origem": "Outbound", "etapa": "Demonstração", "probabilidade": 40.3, "mrr": 1012.26, "setup": 5205.55, "total": 6217.81, "mrr_esperado": 407.94, "setup_esperado": 2097.84, "receita_esperada": 2505.78, "data_entrada_etapa": "2026-02-10", "dias_na_etapa": 82.4, "data_fechamento_projetada": "2026-05-04"}, {"id": "55927337773", "empresa": "", "vendedor": "Wesley Caldas", "tipo": "Novos", "origem": "Outbound", "etapa": "Demonstração", "probabilidade": 28.1, "mrr": 2446.5, "setup": 9200.0, "total": 11646.5, "mrr_esperado": 687.47, "setup_esperado": 2585.2, "receita_esperada": 3272.67, "data_entrada_etapa": "2026-02-10", "dias_na_etapa": 82.4, "data_fechamento_projetada": "2026-05-04"}, {"id": "56162789699", "empresa": "", "vendedor": "Camila Ferreira Marques", "tipo": "Novos", "origem": "Outbound", "etapa": "Demonstração", "probabilidade": 28.1, "mrr": 2714.49, "setup": 13007.48, "total": 15721.97, "mrr_esperado": 762.77, "setup_esperado": 3655.1, "receita_esperada": 4417.87, "data_entrada_etapa": "2026-04-26", "dias_na_etapa": 7.4, "data_fechamento_projetada": "2026-05-06"}, {"id": "56135914778", "empresa": "", "vendedor": "João Tavares da Costa", "tipo": "Novos", "origem": "Outbound", "etapa": "Demonstração", "probabilidade": 28.1, "mrr": 2714.49, "setup": 13007.48, "total": 15721.97, "mrr_esperado": 762.77, "setup_esperado": 3655.1, "receita_esperada": 4417.87, "data_entrada_etapa": "2026-02-23", "dias_na_etapa": 69.7, "data_fechamento_projetada": "2026-05-04"}, {"id": "56133615794", "empresa": "", "vendedor": "Pedro Lustosa", "tipo": "Base", "origem": "Outbound", "etapa": "Xeque-Mate", "probabilidade": 88.2, "mrr": 2853.0, "setup": 13470.0, "total": 16323.0, "mrr_esperado": 2516.35, "setup_esperado": 11880.54, "receita_esperada": 14396.89, "data_entrada_etapa": "2026-04-17", "dias_na_etapa": 16.4, "data_fechamento_projetada": "2026-05-04"}, {"id": "56462270639", "empresa": "", "vendedor": "João Tavares da Costa", "tipo": "Novos", "origem": "Outbound", "etapa": "Demonstração", "probabilidade": 28.1, "mrr": 2714.49, "setup": 13007.48, "total": 15721.97, "mrr_esperado": 762.77, "setup_esperado": 3655.1, "receita_esperada": 4417.87, "data_entrada_etapa": "2026-04-01", "dias_na_etapa": 32.3, "data_fechamento_projetada": "2026-05-04"}, {"id": "56836123269", "empresa": "", "vendedor": "Vanessa Carvalho Borges", "tipo": "Novos", "origem": "Outbound", "etapa": "Demonstração", "probabilidade": 28.1, "mrr": 3800.0, "setup": 13500.0, "total": 17300.0, "mrr_esperado": 1067.8, "setup_esperado": 3793.5, "receita_esperada": 4861.3, "data_entrada_etapa": "2026-03-18", "dias_na_etapa": 46.3, "data_fechamento_projetada": "2026-05-04"}, {"id": "56828993912", "empresa": "", "vendedor": "Vanessa Carvalho Borges", "tipo": "Novos", "origem": "Outbound", "etapa": "Proposta", "probabilidade": 44.1, "mrr": 2097.0, "setup": 7920.0, "total": 10017.0, "mrr_esperado": 924.78, "setup_esperado": 3492.72, "receita_esperada": 4417.5, "data_entrada_etapa": "2026-03-04", "dias_na_etapa": 60.5, "data_fechamento_projetada": "2026-05-04"}, {"id": "57034908790", "empresa": "", "vendedor": "Vanessa Carvalho Borges", "tipo": "Novos", "origem": "Outbound", "etapa": "Proposta", "probabilidade": 44.1, "mrr": 2097.2, "setup": 8184.0, "total": 10281.2, "mrr_esperado": 924.87, "setup_esperado": 3609.14, "receita_esperada": 4534.01, "data_entrada_etapa": "2026-04-17", "dias_na_etapa": 16.4, "data_fechamento_projetada": "2026-05-04"}, {"id": "57128439658", "empresa": "", "vendedor": "Nathália Feliciana Gonçalves", "tipo": "Base", "origem": "Outbound", "etapa": "Proposta", "probabilidade": 61.2, "mrr": 423.06, "setup": 7360.0, "total": 7783.06, "mrr_esperado": 258.91, "setup_esperado": 4504.32, "receita_esperada": 4763.23, "data_entrada_etapa": "2026-03-24", "dias_na_etapa": 40.3, "data_fechamento_projetada": "2026-05-04"}, {"id": "57093641124", "empresa": "", "vendedor": "Camila Ferreira Marques", "tipo": "Base", "origem": "Outbound", "etapa": "Demonstração", "probabilidade": 40.3, "mrr": 1042.65, "setup": 18388.5, "total": 19431.15, "mrr_esperado": 420.19, "setup_esperado": 7410.57, "receita_esperada": 7830.75, "data_entrada_etapa": "2026-02-27", "dias_na_etapa": 65.6, "data_fechamento_projetada": "2026-05-04"}, {"id": "57217440866", "empresa": "", "vendedor": "João Tavares da Costa", "tipo": "Novos", "origem": "Inbound", "etapa": "Proposta", "probabilidade": 44.1, "mrr": 1685.25, "setup": 34408.0, "total": 36093.25, "mrr_esperado": 743.2, "setup_esperado": 15173.93, "receita_esperada": 15917.12, "data_entrada_etapa": "2026-04-22", "dias_na_etapa": 11.6, "data_fechamento_projetada": "2026-05-04"}, {"id": "57367281813", "empresa": "", "vendedor": "Camila Ferreira Marques", "tipo": "Novos", "origem": "Outbound", "etapa": "Demonstração", "probabilidade": 28.1, "mrr": 2714.49, "setup": 13007.48, "total": 15721.97, "mrr_esperado": 762.77, "setup_esperado": 3655.1, "receita_esperada": 4417.87, "data_entrada_etapa": "2026-04-26", "dias_na_etapa": 7.5, "data_fechamento_projetada": "2026-05-06"}, {"id": "57406415762", "empresa": "", "vendedor": "Pedro Lustosa", "tipo": "Base", "origem": "Outbound", "etapa": "Confecção", "probabilidade": 50.9, "mrr": 908.25, "setup": 10350.0, "total": 11258.25, "mrr_esperado": 462.3, "setup_esperado": 5268.15, "receita_esperada": 5730.45, "data_entrada_etapa": "2026-03-18", "dias_na_etapa": 46.5, "data_fechamento_projetada": "2026-05-04"}, {"id": "57471368745", "empresa": "", "vendedor": "João Tavares da Costa", "tipo": "Novos", "origem": "Outbound", "etapa": "Confecção", "probabilidade": 34.0, "mrr": 1695.75, "setup": 27600.0, "total": 29295.75, "mrr_esperado": 576.56, "setup_esperado": 9384.0, "receita_esperada": 9960.56, "data_entrada_etapa": "2026-04-01", "dias_na_etapa": 32.3, "data_fechamento_projetada": "2026-05-04"}, {"id": "57789853295", "empresa": "", "vendedor": "Pedro Lustosa", "tipo": "Base", "origem": "Indicação", "etapa": "Demonstração", "probabilidade": 40.3, "mrr": 1012.26, "setup": 5205.55, "total": 6217.81, "mrr_esperado": 407.94, "setup_esperado": 2097.84, "receita_esperada": 2505.78, "data_entrada_etapa": "2026-04-14", "dias_na_etapa": 19.5, "data_fechamento_projetada": "2026-05-04"}, {"id": "57830305846", "empresa": "", "vendedor": "Wesley Caldas", "tipo": "Novos", "origem": "Indicação", "etapa": "Proposta", "probabilidade": 44.1, "mrr": 840.0, "setup": 13800.0, "total": 14640.0, "mrr_esperado": 370.44, "setup_esperado": 6085.8, "receita_esperada": 6456.24, "data_entrada_etapa": "2026-04-06", "dias_na_etapa": 27.5, "data_fechamento_projetada": "2026-05-04"}, {"id": "57833188216", "empresa": "", "vendedor": "João Tavares da Costa", "tipo": "Novos", "origem": "Inbound", "etapa": "Proposta", "probabilidade": 44.1, "mrr": 960.75, "setup": 23460.0, "total": 24420.75, "mrr_esperado": 423.69, "setup_esperado": 10345.86, "receita_esperada": 10769.55, "data_entrada_etapa": "2026-03-17", "dias_na_etapa": 47.6, "data_fechamento_projetada": "2026-05-04"}, {"id": "57835952932", "empresa": "", "vendedor": "Wesley Caldas", "tipo": "Novos", "origem": "Outbound", "etapa": "Confecção", "probabilidade": 34.0, "mrr": 1410.65, "setup": 13800.0, "total": 15210.65, "mrr_esperado": 479.62, "setup_esperado": 4692.0, "receita_esperada": 5171.62, "data_entrada_etapa": "2026-03-26", "dias_na_etapa": 38.4, "data_fechamento_projetada": "2026-05-04"}, {"id": "57856250943", "empresa": "", "vendedor": "Camila Ferreira Marques", "tipo": "Novos", "origem": "Indicação", "etapa": "Proposta", "probabilidade": 44.1, "mrr": 1417.5, "setup": 9660.0, "total": 11077.5, "mrr_esperado": 625.12, "setup_esperado": 4260.06, "receita_esperada": 4885.18, "data_entrada_etapa": "2026-04-26", "dias_na_etapa": 7.5, "data_fechamento_projetada": "2026-05-04"}, {"id": "57960812343", "empresa": "", "vendedor": "Vanessa Carvalho Borges", "tipo": "Novos", "origem": "Outbound", "etapa": "Proposta", "probabilidade": 44.1, "mrr": 3294.0, "setup": 13950.0, "total": 17244.0, "mrr_esperado": 1452.65, "setup_esperado": 6151.95, "receita_esperada": 7604.6, "data_entrada_etapa": "2026-03-30", "dias_na_etapa": 34.4, "data_fechamento_projetada": "2026-05-04"}, {"id": "57950142374", "empresa": "", "vendedor": "Vanessa Carvalho Borges", "tipo": "Novos", "origem": "Outbound", "etapa": "Proposta", "probabilidade": 44.1, "mrr": 898.8, "setup": 9680.0, "total": 10578.8, "mrr_esperado": 396.37, "setup_esperado": 4268.88, "receita_esperada": 4665.25, "data_entrada_etapa": "2026-03-25", "dias_na_etapa": 39.4, "data_fechamento_projetada": "2026-05-04"}, {"id": "57941026121", "empresa": "", "vendedor": "Camila Ferreira Marques", "tipo": "Novos", "origem": "Indicação", "etapa": "Proposta", "probabilidade": 44.1, "mrr": 1518.3, "setup": 19320.0, "total": 20838.3, "mrr_esperado": 669.57, "setup_esperado": 8520.12, "receita_esperada": 9189.69, "data_entrada_etapa": "2026-03-31", "dias_na_etapa": 33.3, "data_fechamento_projetada": "2026-05-04"}, {"id": "58025073254", "empresa": "", "vendedor": "João Tavares da Costa", "tipo": "Novos", "origem": "Inbound", "etapa": "Demonstração", "probabilidade": 28.1, "mrr": 3800.0, "setup": 13500.0, "total": 17300.0, "mrr_esperado": 1067.8, "setup_esperado": 3793.5, "receita_esperada": 4861.3, "data_entrada_etapa": "2026-04-07", "dias_na_etapa": 26.5, "data_fechamento_projetada": "2026-05-04"}, {"id": "58121143409", "empresa": "", "vendedor": "Camila Ferreira Marques", "tipo": "Novos", "origem": "Outbound", "etapa": "Proposta", "probabilidade": 44.1, "mrr": 3800.0, "setup": 13500.0, "total": 17300.0, "mrr_esperado": 1675.8, "setup_esperado": 5953.5, "receita_esperada": 7629.3, "data_entrada_etapa": "2026-03-31", "dias_na_etapa": 33.3, "data_fechamento_projetada": "2026-05-04"}, {"id": "58135656494", "empresa": "", "vendedor": "Gabriela Martins", "tipo": "Novos", "origem": "Indicação", "etapa": "Demonstração", "probabilidade": 28.1, "mrr": 3800.0, "setup": 13500.0, "total": 17300.0, "mrr_esperado": 1067.8, "setup_esperado": 3793.5, "receita_esperada": 4861.3, "data_entrada_etapa": "2026-03-25", "dias_na_etapa": 39.3, "data_fechamento_projetada": "2026-05-04"}, {"id": "58166850162", "empresa": "", "vendedor": "Aline Gomes dos Santos", "tipo": "Base", "origem": "Outbound", "etapa": "Proposta", "probabilidade": 61.2, "mrr": 465.0, "setup": 4000.0, "total": 4465.0, "mrr_esperado": 284.58, "setup_esperado": 2448.0, "receita_esperada": 2732.58, "data_entrada_etapa": "2026-04-13", "dias_na_etapa": 20.6, "data_fechamento_projetada": "2026-05-04"}, {"id": "58183706732", "empresa": "", "vendedor": "Aline Gomes dos Santos", "tipo": "Base", "origem": "Outbound", "etapa": "Proposta", "probabilidade": 61.2, "mrr": 621.4, "setup": 4600.0, "total": 5221.4, "mrr_esperado": 380.3, "setup_esperado": 2815.2, "receita_esperada": 3195.5, "data_entrada_etapa": "2026-04-27", "dias_na_etapa": 6.6, "data_fechamento_projetada": "2026-05-04"}, {"id": "58244782612", "empresa": "", "vendedor": "Aline Gomes dos Santos", "tipo": "Base", "origem": "Outbound", "etapa": "Proposta", "probabilidade": 61.2, "mrr": 1012.26, "setup": 5205.55, "total": 6217.81, "mrr_esperado": 619.5, "setup_esperado": 3185.8, "receita_esperada": 3805.3, "data_entrada_etapa": "2026-04-20", "dias_na_etapa": 13.5, "data_fechamento_projetada": "2026-05-04"}, {"id": "58254349588", "empresa": "", "vendedor": "Wesley Caldas", "tipo": "Novos", "origem": "Indicação", "etapa": "Proposta", "probabilidade": 44.1, "mrr": 3678.3, "setup": 4600.0, "total": 8278.3, "mrr_esperado": 1622.13, "setup_esperado": 2028.6, "receita_esperada": 3650.73, "data_entrada_etapa": "2026-04-06", "dias_na_etapa": 27.5, "data_fechamento_projetada": "2026-05-04"}, {"id": "58322127492", "empresa": "", "vendedor": "João Tavares da Costa", "tipo": "Novos", "origem": "Inbound", "etapa": "Confecção", "probabilidade": 34.0, "mrr": 1316.7, "setup": 9200.0, "total": 10516.7, "mrr_esperado": 447.68, "setup_esperado": 3128.0, "receita_esperada": 3575.68, "data_entrada_etapa": "2026-03-27", "dias_na_etapa": 37.3, "data_fechamento_projetada": "2026-05-04"}, {"id": "58322024078", "empresa": "", "vendedor": "Aline Gomes dos Santos", "tipo": "Base", "origem": "Outbound", "etapa": "Proposta", "probabilidade": 61.2, "mrr": 819.53, "setup": 4160.0, "total": 4979.53, "mrr_esperado": 501.55, "setup_esperado": 2545.92, "receita_esperada": 3047.47, "data_entrada_etapa": "2026-04-27", "dias_na_etapa": 6.6, "data_fechamento_projetada": "2026-05-04"}, {"id": "58348995641", "empresa": "", "vendedor": "Camila Ferreira Marques", "tipo": "Novos", "origem": "Inbound", "etapa": "Confecção", "probabilidade": 34.0, "mrr": 730.8, "setup": 10867.5, "total": 11598.3, "mrr_esperado": 248.47, "setup_esperado": 3694.95, "receita_esperada": 3943.42, "data_entrada_etapa": "2026-04-01", "dias_na_etapa": 32.4, "data_fechamento_projetada": "2026-05-04"}, {"id": "58439529755", "empresa": "", "vendedor": "Aline Gomes dos Santos", "tipo": "Base", "origem": "Outbound", "etapa": "Proposta", "probabilidade": 61.2, "mrr": 799.5, "setup": 4000.0, "total": 4799.5, "mrr_esperado": 489.29, "setup_esperado": 2448.0, "receita_esperada": 2937.29, "data_entrada_etapa": "2026-04-27", "dias_na_etapa": 6.6, "data_fechamento_projetada": "2026-05-04"}, {"id": "58436046253", "empresa": "", "vendedor": "Camila Ferreira Marques", "tipo": "Novos", "origem": "Outbound", "etapa": "Confecção", "probabilidade": 34.0, "mrr": 2714.49, "setup": 13007.48, "total": 15721.97, "mrr_esperado": 922.93, "setup_esperado": 4422.54, "receita_esperada": 5345.47, "data_entrada_etapa": "2026-04-26", "dias_na_etapa": 7.4, "data_fechamento_projetada": "2026-05-04"}, {"id": "58519357547", "empresa": "", "vendedor": "Wesley Caldas", "tipo": "Novos", "origem": "Indicação", "etapa": "Demonstração", "probabilidade": 28.1, "mrr": 1454.63, "setup": 13800.0, "total": 15254.63, "mrr_esperado": 408.75, "setup_esperado": 3877.8, "receita_esperada": 4286.55, "data_entrada_etapa": "2026-03-27", "dias_na_etapa": 37.4, "data_fechamento_projetada": "2026-05-04"}, {"id": "58553139998", "empresa": "", "vendedor": "Pedro Lustosa", "tipo": "Base", "origem": "Outbound", "etapa": "Demonstração", "probabilidade": 40.3, "mrr": 1012.26, "setup": 5205.55, "total": 6217.81, "mrr_esperado": 407.94, "setup_esperado": 2097.84, "receita_esperada": 2505.78, "data_entrada_etapa": "2026-04-17", "dias_na_etapa": 16.3, "data_fechamento_projetada": "2026-05-04"}, {"id": "58599345443", "empresa": "", "vendedor": "Vanessa Carvalho Borges", "tipo": "Novos", "origem": "Inbound", "etapa": "Demonstração", "probabilidade": 28.1, "mrr": 2714.49, "setup": 13007.48, "total": 15721.97, "mrr_esperado": 762.77, "setup_esperado": 3655.1, "receita_esperada": 4417.87, "data_entrada_etapa": "2026-04-01", "dias_na_etapa": 32.6, "data_fechamento_projetada": "2026-05-04"}, {"id": "58630694583", "empresa": "", "vendedor": "Nathália Feliciana Gonçalves", "tipo": "Base", "origem": "Indicação", "etapa": "Proposta", "probabilidade": 61.2, "mrr": 8291.5, "setup": 14720.0, "total": 23011.5, "mrr_esperado": 5074.4, "setup_esperado": 9008.64, "receita_esperada": 14083.04, "data_entrada_etapa": "2026-04-02", "dias_na_etapa": 31.5, "data_fechamento_projetada": "2026-05-04"}, {"id": "58639537290", "empresa": "", "vendedor": "Vanessa Carvalho Borges", "tipo": "Novos", "origem": "Inbound", "etapa": "Proposta", "probabilidade": 44.1, "mrr": 699.0, "setup": 6900.0, "total": 7599.0, "mrr_esperado": 308.26, "setup_esperado": 3042.9, "receita_esperada": 3351.16, "data_entrada_etapa": "2026-04-10", "dias_na_etapa": 23.4, "data_fechamento_projetada": "2026-05-04"}, {"id": "58676834917", "empresa": "", "vendedor": "Nathália Feliciana Gonçalves", "tipo": "Base", "origem": "Indicação", "etapa": "Confecção", "probabilidade": 50.9, "mrr": 519.0, "setup": 13800.0, "total": 14319.0, "mrr_esperado": 264.17, "setup_esperado": 7024.2, "receita_esperada": 7288.37, "data_entrada_etapa": "2026-04-27", "dias_na_etapa": 6.3, "data_fechamento_projetada": "2026-05-04"}, {"id": "58685894719", "empresa": "", "vendedor": "Nathália Feliciana Gonçalves", "tipo": "Base", "origem": "Outbound", "etapa": "Confecção", "probabilidade": 50.9, "mrr": 1307.22, "setup": 7785.0, "total": 9092.22, "mrr_esperado": 665.37, "setup_esperado": 3962.57, "receita_esperada": 4627.94, "data_entrada_etapa": "2026-04-13", "dias_na_etapa": 20.6, "data_fechamento_projetada": "2026-05-04"}, {"id": "58798223753", "empresa": "", "vendedor": "Aline Gomes dos Santos", "tipo": "Base", "origem": "Indicação", "etapa": "Proposta", "probabilidade": 61.2, "mrr": 425.75, "setup": 15272.0, "total": 15697.75, "mrr_esperado": 260.56, "setup_esperado": 9346.46, "receita_esperada": 9607.02, "data_entrada_etapa": "2026-04-23", "dias_na_etapa": 10.2, "data_fechamento_projetada": "2026-05-04"}, {"id": "58901987846", "empresa": "", "vendedor": "Camila Ferreira Marques", "tipo": "Novos", "origem": "Indicação", "etapa": "Demonstração", "probabilidade": 28.1, "mrr": 2714.49, "setup": 13007.48, "total": 15721.97, "mrr_esperado": 762.77, "setup_esperado": 3655.1, "receita_esperada": 4417.87, "data_entrada_etapa": "2026-04-07", "dias_na_etapa": 26.4, "data_fechamento_projetada": "2026-05-04"}, {"id": "58902261791", "empresa": "", "vendedor": "Pedro Lustosa", "tipo": "Base", "origem": "Indicação", "etapa": "Proposta", "probabilidade": 61.2, "mrr": 5048.5, "setup": 7820.0, "total": 12868.5, "mrr_esperado": 3089.68, "setup_esperado": 4785.84, "receita_esperada": 7875.52, "data_entrada_etapa": "2026-04-24", "dias_na_etapa": 9.5, "data_fechamento_projetada": "2026-05-04"}, {"id": "58902512019", "empresa": "", "vendedor": "Aline Gomes dos Santos", "tipo": "Base", "origem": "Indicação", "etapa": "Demonstração", "probabilidade": 40.3, "mrr": 6928.12, "setup": 26135.55, "total": 33063.67, "mrr_esperado": 2792.03, "setup_esperado": 10532.63, "receita_esperada": 13324.66, "data_entrada_etapa": "2026-04-14", "dias_na_etapa": 19.5, "data_fechamento_projetada": "2026-05-04"}, {"id": "58986306676", "empresa": "", "vendedor": "Nathália Feliciana Gonçalves", "tipo": "Base", "origem": "Indicação", "etapa": "Confecção", "probabilidade": 50.9, "mrr": 14947.0, "setup": 22520.0, "total": 37467.0, "mrr_esperado": 7608.02, "setup_esperado": 11462.68, "receita_esperada": 19070.7, "data_entrada_etapa": "2026-04-24", "dias_na_etapa": 9.3, "data_fechamento_projetada": "2026-05-04"}, {"id": "59045223732", "empresa": "", "vendedor": "Camila Ferreira Marques", "tipo": "Novos", "origem": "Inbound", "etapa": "Proposta", "probabilidade": 44.1, "mrr": 133.41, "setup": 13037.8, "total": 13171.21, "mrr_esperado": 58.83, "setup_esperado": 5749.67, "receita_esperada": 5808.5, "data_entrada_etapa": "2026-04-20", "dias_na_etapa": 13.5, "data_fechamento_projetada": "2026-05-04"}, {"id": "59018165633", "empresa": "", "vendedor": "João Tavares da Costa", "tipo": "Novos", "origem": "Outbound", "etapa": "Xeque-Mate", "probabilidade": 78.3, "mrr": 2714.49, "setup": 13007.48, "total": 15721.97, "mrr_esperado": 2125.45, "setup_esperado": 10184.86, "receita_esperada": 12310.3, "data_entrada_etapa": "2026-04-15", "dias_na_etapa": 18.3, "data_fechamento_projetada": "2026-05-04"}, {"id": "59102195597", "empresa": "", "vendedor": "João Tavares da Costa", "tipo": "Novos", "origem": "Inbound", "etapa": "Proposta", "probabilidade": 44.1, "mrr": 4257.75, "setup": 21252.0, "total": 25509.75, "mrr_esperado": 1877.67, "setup_esperado": 9372.13, "receita_esperada": 11249.8, "data_entrada_etapa": "2026-04-20", "dias_na_etapa": 13.6, "data_fechamento_projetada": "2026-05-04"}, {"id": "59132824402", "empresa": "", "vendedor": "Camila Ferreira Marques", "tipo": "Novos", "origem": "Inbound", "etapa": "Confecção", "probabilidade": 34.0, "mrr": 2714.49, "setup": 13007.48, "total": 15721.97, "mrr_esperado": 922.93, "setup_esperado": 4422.54, "receita_esperada": 5345.47, "data_entrada_etapa": "2026-04-23", "dias_na_etapa": 10.6, "data_fechamento_projetada": "2026-05-04"}, {"id": "59136995506", "empresa": "", "vendedor": "Camila Ferreira Marques", "tipo": "Novos", "origem": "Outbound", "etapa": "Demonstração", "probabilidade": 28.1, "mrr": 2714.49, "setup": 13007.48, "total": 15721.97, "mrr_esperado": 762.77, "setup_esperado": 3655.1, "receita_esperada": 4417.87, "data_entrada_etapa": "2026-04-26", "dias_na_etapa": 7.5, "data_fechamento_projetada": "2026-05-06"}, {"id": "59086405899", "empresa": "", "vendedor": "Aline Gomes dos Santos", "tipo": "Base", "origem": "Indicação", "etapa": "Xeque-Mate", "probabilidade": 88.2, "mrr": 1062.51, "setup": 8212.5, "total": 9275.01, "mrr_esperado": 937.13, "setup_esperado": 7243.43, "receita_esperada": 8180.56, "data_entrada_etapa": "2026-05-04", "dias_na_etapa": -0.5, "data_fechamento_projetada": "2026-05-06"}, {"id": "59148239957", "empresa": "", "vendedor": "Camila Ferreira Marques", "tipo": "Novos", "origem": "Inbound", "etapa": "Confecção", "probabilidade": 34.0, "mrr": 6032.25, "setup": 9466.8, "total": 15499.05, "mrr_esperado": 2050.97, "setup_esperado": 3218.71, "receita_esperada": 5269.68, "data_entrada_etapa": "2026-04-26", "dias_na_etapa": 7.5, "data_fechamento_projetada": "2026-05-04"}, {"id": "59164363960", "empresa": "", "vendedor": "Aline Gomes dos Santos", "tipo": "Base", "origem": "Outbound", "etapa": "Demonstração", "probabilidade": 40.3, "mrr": 1012.26, "setup": 5205.55, "total": 6217.81, "mrr_esperado": 407.94, "setup_esperado": 2097.84, "receita_esperada": 2505.78, "data_entrada_etapa": "2026-04-27", "dias_na_etapa": 6.4, "data_fechamento_projetada": "2026-05-05"}, {"id": "59166122901", "empresa": "", "vendedor": "Vanessa Carvalho Borges", "tipo": "Novos", "origem": "Inbound", "etapa": "Proposta", "probabilidade": 44.1, "mrr": 2736.7, "setup": 22908.0, "total": 25644.7, "mrr_esperado": 1206.88, "setup_esperado": 10102.43, "receita_esperada": 11309.31, "data_entrada_etapa": "2026-04-20", "dias_na_etapa": 13.6, "data_fechamento_projetada": "2026-05-04"}, {"id": "59185237909", "empresa": "", "vendedor": "Nathália Feliciana Gonçalves", "tipo": "Base", "origem": "Indicação", "etapa": "Xeque-Mate", "probabilidade": 88.2, "mrr": 6902.0, "setup": 7590.0, "total": 14492.0, "mrr_esperado": 6087.56, "setup_esperado": 6694.38, "receita_esperada": 12781.94, "data_entrada_etapa": "2026-04-29", "dias_na_etapa": 4.2, "data_fechamento_projetada": "2026-05-04"}, {"id": "59186242833", "empresa": "", "vendedor": "Pedro Lustosa", "tipo": "Base", "origem": "Indicação", "etapa": "Demonstração", "probabilidade": 40.3, "mrr": 2839.2, "setup": 9200.0, "total": 12039.2, "mrr_esperado": 1144.2, "setup_esperado": 3707.6, "receita_esperada": 4851.8, "data_entrada_etapa": "2026-04-17", "dias_na_etapa": 16.6, "data_fechamento_projetada": "2026-05-04"}, {"id": "59186305357", "empresa": "", "vendedor": "Aline Gomes dos Santos", "tipo": "Base", "origem": "Indicação", "etapa": "Demonstração", "probabilidade": 40.3, "mrr": 1012.26, "setup": 5205.55, "total": 6217.81, "mrr_esperado": 407.94, "setup_esperado": 2097.84, "receita_esperada": 2505.78, "data_entrada_etapa": "2026-04-20", "dias_na_etapa": 13.5, "data_fechamento_projetada": "2026-05-04"}, {"id": "59186317735", "empresa": "", "vendedor": "Aline Gomes dos Santos", "tipo": "Base", "origem": "Outbound", "etapa": "Demonstração", "probabilidade": 40.3, "mrr": 1012.26, "setup": 5205.55, "total": 6217.81, "mrr_esperado": 407.94, "setup_esperado": 2097.84, "receita_esperada": 2505.78, "data_entrada_etapa": "2026-04-20", "dias_na_etapa": 13.5, "data_fechamento_projetada": "2026-05-04"}, {"id": "59272381834", "empresa": "", "vendedor": "Wesley Caldas", "tipo": "Novos", "origem": "Outbound", "etapa": "Confecção", "probabilidade": 34.0, "mrr": 3810.0, "setup": 14720.0, "total": 18530.0, "mrr_esperado": 1295.4, "setup_esperado": 5004.8, "receita_esperada": 6300.2, "data_entrada_etapa": "2026-04-30", "dias_na_etapa": 3.6, "data_fechamento_projetada": "2026-05-08"}, {"id": "59218741813", "empresa": "", "vendedor": "Camila Ferreira Marques", "tipo": "Novos", "origem": "Inbound", "etapa": "Proposta", "probabilidade": 44.1, "mrr": 2812.95, "setup": 19126.8, "total": 21939.75, "mrr_esperado": 1240.51, "setup_esperado": 8434.92, "receita_esperada": 9675.43, "data_entrada_etapa": "2026-04-23", "dias_na_etapa": 10.6, "data_fechamento_projetada": "2026-05-04"}, {"id": "59305877760", "empresa": "", "vendedor": "Wesley Caldas", "tipo": "Novos", "origem": "Inbound", "etapa": "Confecção", "probabilidade": 34.0, "mrr": 1680.0, "setup": 6440.0, "total": 8120.0, "mrr_esperado": 571.2, "setup_esperado": 2189.6, "receita_esperada": 2760.8, "data_entrada_etapa": "2026-04-24", "dias_na_etapa": 9.4, "data_fechamento_projetada": "2026-05-04"}, {"id": "59366050400", "empresa": "", "vendedor": "João Tavares da Costa", "tipo": "Novos", "origem": "Inbound", "etapa": "Proposta", "probabilidade": 44.1, "mrr": 2982.0, "setup": 25806.0, "total": 28788.0, "mrr_esperado": 1315.06, "setup_esperado": 11380.45, "receita_esperada": 12695.51, "data_entrada_etapa": "2026-04-28", "dias_na_etapa": 5.6, "data_fechamento_projetada": "2026-05-04"}, {"id": "59369458965", "empresa": "", "vendedor": "Pedro Lustosa", "tipo": "Base", "origem": "Outbound", "etapa": "Proposta", "probabilidade": 61.2, "mrr": 1134.0, "setup": 9200.0, "total": 10334.0, "mrr_esperado": 694.01, "setup_esperado": 5630.4, "receita_esperada": 6324.41, "data_entrada_etapa": "2026-04-24", "dias_na_etapa": 9.6, "data_fechamento_projetada": "2026-05-04"}, {"id": "59378502223", "empresa": "", "vendedor": "Camila Ferreira Marques", "tipo": "Novos", "origem": "Inbound", "etapa": "Confecção", "probabilidade": 34.0, "mrr": 2475.74, "setup": 11834.9, "total": 14310.64, "mrr_esperado": 841.75, "setup_esperado": 4023.87, "receita_esperada": 4865.62, "data_entrada_etapa": "2026-04-26", "dias_na_etapa": 7.5, "data_fechamento_projetada": "2026-05-04"}, {"id": "59418351768", "empresa": "", "vendedor": "Camila Ferreira Marques", "tipo": "Base", "origem": "Indicação", "etapa": "Proposta", "probabilidade": 61.2, "mrr": 942.69, "setup": 5783.4, "total": 5783.4, "mrr_esperado": 576.93, "setup_esperado": 3539.44, "receita_esperada": 3539.44, "data_entrada_etapa": "2026-04-26", "dias_na_etapa": 7.4, "data_fechamento_projetada": "2026-05-04"}, {"id": "59418719530", "empresa": "", "vendedor": "Vanessa Carvalho Borges", "tipo": "Novos", "origem": "Outbound", "etapa": "Proposta", "probabilidade": 44.1, "mrr": 1038.9, "setup": 22908.0, "total": 23946.9, "mrr_esperado": 458.15, "setup_esperado": 10102.43, "receita_esperada": 10560.58, "data_entrada_etapa": "2026-04-23", "dias_na_etapa": 10.2, "data_fechamento_projetada": "2026-05-04"}, {"id": "59418595495", "empresa": "", "vendedor": "Nathália Feliciana Gonçalves", "tipo": "Base", "origem": "Indicação", "etapa": "Proposta", "probabilidade": 61.2, "mrr": 1764.0, "setup": 5000.0, "total": 6764.0, "mrr_esperado": 1079.57, "setup_esperado": 3060.0, "receita_esperada": 4139.57, "data_entrada_etapa": "2026-04-27", "dias_na_etapa": 6.5, "data_fechamento_projetada": "2026-05-04"}, {"id": "59418676227", "empresa": "", "vendedor": "Wesley Caldas", "tipo": "Novos", "origem": "Indicação", "etapa": "Demonstração", "probabilidade": 28.1, "mrr": 2714.49, "setup": 13007.48, "total": 15721.97, "mrr_esperado": 762.77, "setup_esperado": 3655.1, "receita_esperada": 4417.87, "data_entrada_etapa": "2026-04-28", "dias_na_etapa": 5.5, "data_fechamento_projetada": "2026-05-08"}, {"id": "59545412460", "empresa": "", "vendedor": "Nathália Feliciana Gonçalves", "tipo": "Base", "origem": "Outbound", "etapa": "Proposta", "probabilidade": 61.2, "mrr": 1500.0, "setup": 4000.0, "total": 5500.0, "mrr_esperado": 918.0, "setup_esperado": 2448.0, "receita_esperada": 3366.0, "data_entrada_etapa": "2026-05-04", "dias_na_etapa": -0.7, "data_fechamento_projetada": "2026-05-09"}, {"id": "59666480753", "empresa": "", "vendedor": "Wesley Caldas", "tipo": "Novos", "origem": "Inbound", "etapa": "Confecção", "probabilidade": 34.0, "mrr": 3378.63, "setup": 20736.8, "total": 24115.43, "mrr_esperado": 1148.73, "setup_esperado": 7050.51, "receita_esperada": 8199.25, "data_entrada_etapa": "2026-04-27", "dias_na_etapa": 6.3, "data_fechamento_projetada": "2026-05-05"}, {"id": "59728095748", "empresa": "", "vendedor": "Pedro Lustosa", "tipo": "Base", "origem": "Indicação", "etapa": "Xeque-Mate", "probabilidade": 88.2, "mrr": 241.6, "setup": 2300.0, "total": 2541.6, "mrr_esperado": 213.09, "setup_esperado": 2028.6, "receita_esperada": 2241.69, "data_entrada_etapa": "2026-04-28", "dias_na_etapa": 5.6, "data_fechamento_projetada": "2026-05-04"}, {"id": "59727974714", "empresa": "", "vendedor": "Pedro Lustosa", "tipo": "Base", "origem": "Outbound", "etapa": "Xeque-Mate", "probabilidade": 88.2, "mrr": 628.16, "setup": 2300.0, "total": 2928.16, "mrr_esperado": 554.04, "setup_esperado": 2028.6, "receita_esperada": 2582.64, "data_entrada_etapa": "2026-04-28", "dias_na_etapa": 5.6, "data_fechamento_projetada": "2026-05-04"}, {"id": "59728073800", "empresa": "", "vendedor": "Aline Gomes dos Santos", "tipo": "Base", "origem": "Indicação", "etapa": "Demonstração", "probabilidade": 40.3, "mrr": 1012.26, "setup": 5205.55, "total": 6217.81, "mrr_esperado": 407.94, "setup_esperado": 2097.84, "receita_esperada": 2505.78, "data_entrada_etapa": "2026-05-04", "dias_na_etapa": -0.7, "data_fechamento_projetada": "2026-05-12"}, {"id": "59810732548", "empresa": "", "vendedor": "Wesley Caldas", "tipo": "Base", "origem": "Outbound", "etapa": "Demonstração", "probabilidade": 40.3, "mrr": 1012.26, "setup": 5205.55, "total": 6217.81, "mrr_esperado": 407.94, "setup_esperado": 2097.84, "receita_esperada": 2505.78, "data_entrada_etapa": "2026-04-29", "dias_na_etapa": 4.4, "data_fechamento_projetada": "2026-05-07"}, {"id": "59915216279", "empresa": "", "vendedor": "Wesley Caldas", "tipo": "Novos", "origem": "Inbound", "etapa": "Demonstração", "probabilidade": 28.1, "mrr": 2714.49, "setup": 13007.48, "total": 15721.97, "mrr_esperado": 762.77, "setup_esperado": 3655.1, "receita_esperada": 4417.87, "data_entrada_etapa": "2026-05-04", "dias_na_etapa": -0.4, "data_fechamento_projetada": "2026-05-14"}, {"id": "60008664645", "empresa": "", "vendedor": "Wesley Caldas", "tipo": "Novos", "origem": "Indicação", "etapa": "Demonstração", "probabilidade": 28.1, "mrr": 10133.44, "setup": 42907.48, "total": 53040.92, "mrr_esperado": 2847.5, "setup_esperado": 12057.0, "receita_esperada": 14904.5, "data_entrada_etapa": "2026-05-04", "dias_na_etapa": -0.6, "data_fechamento_projetada": "2026-05-14"}]};
+</script>
+
+</body>
+</html>
