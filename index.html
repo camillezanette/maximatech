@@ -256,17 +256,7 @@ tr:hover td{background:var(--bg);}
     <!-- ABA PIPELINE -->
     <div class="tab-content active" id="tab-pipeline">
 
-    <!-- METODOLOGIA -->
-    <div class="metodo-section">
-      <div class="metodo-box">
-        <div class="metodo-header" onclick="toggleMetodo()">
-          <div class="metodo-header-left">
-            <div class="metodo-header-icon">📐</div>
-            <div>
-              <div class="metodo-header-title">Como este forecast é calculado</div>
-              <div class="metodo-header-sub">Racional metodológico — clique para expandir</div>
-            </div>
-          </div>
+
           <div class="metodo-toggle" id="metodo-toggle">▼</div>
         </div>
         <div class="metodo-body" id="metodo-body">
@@ -354,6 +344,18 @@ tr:hover td{background:var(--bg);}
         </div>
       </div>
     </div>
+
+    <!-- METODOLOGIA -->
+    <div class="metodo-section">
+      <div class="metodo-box">
+        <div class="metodo-header" onclick="toggleMetodo()">
+          <div class="metodo-header-left">
+            <div class="metodo-header-icon">📐</div>
+            <div>
+              <div class="metodo-header-title">Como este forecast é calculado</div>
+              <div class="metodo-header-sub">Racional metodológico — clique para expandir</div>
+            </div>
+          </div>
 
       <div class="meta-row">
         <div class="meta-card">
@@ -637,54 +639,70 @@ function renderHistorico() {
 function drawHistChart(keys) {
   var canvas = document.getElementById('hist-chart');
   if (!canvas) return;
-  var ctx = canvas.getContext('2d');
-  var W = canvas.parentElement.offsetWidth;
+  var W = canvas.parentElement.offsetWidth || 600;
   var H = 120;
   canvas.width = W; canvas.height = H;
-
-  var vals = keys.map(function(k){ return HISTORICO[k].resumo.receita_esperada; });
-  var mrrVals = keys.map(function(k){ return HISTORICO[k].resumo.mrr_esperado; });
-  var setupVals = keys.map(function(k){ return HISTORICO[k].resumo.setup_esperado; });
-
-  var maxV = Math.max.apply(null, vals);
-  var minV = Math.min.apply(null, vals.concat(mrrVals)) * 0.85;
-  var pad = {t:10, b:28, l:10, r:10};
-  var chartW = W - pad.l - pad.r;
-  var chartH = H - pad.t - pad.b;
-
-  function xPos(i) { return pad.l + (keys.length < 2 ? chartW/2 : i * chartW / (keys.length-1)); }
-  function yPos(v) { return pad.t + chartH - ((v - minV) / (maxV - minV + 1)) * chartH; }
-
+  var ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, W, H);
 
-  // Grid lines
-  ctx.strokeStyle = 'rgba(75,85,255,0.06)';
-  ctx.lineWidth = 1;
-  [0.25, 0.5, 0.75, 1].forEach(function(p) {
-    var y = pad.t + chartH * (1-p);
-    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W-pad.r, y); ctx.stroke();
-  });
-
-  function drawLine(data, color, dashed) {
-    if (data.length < 2) return;
-    ctx.beginPath();
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 2;
-    if (dashed) ctx.setLineDash([4,3]); else ctx.setLineDash([]);
-    data.forEach(function(v, i) { i===0 ? ctx.moveTo(xPos(i), yPos(v)) : ctx.lineTo(xPos(i), yPos(v)); });
-    ctx.stroke();
-    ctx.setLineDash([]);
+  if (keys.length < 2) {
+    ctx.fillStyle = 'rgba(90,91,122,0.4)';
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Adicione mais snapshots para ver o gráfico', W/2, H/2);
+    return;
   }
 
-  drawLine(setupVals, 'rgba(75,85,255,0.25)', true);
-  drawLine(mrrVals, 'rgba(0,213,86,0.6)', false);
-  drawLine(vals, '#4b55ff', false);
+  var pad = {t:16, b:28, l:12, r:12};
+  var cW = W - pad.l - pad.r;
+  var cH = H - pad.t - pad.b;
+  var vals = keys.map(function(k){ return HISTORICO[k].resumo.receita_esperada; });
 
-  // Pontos e labels
+  var maxV = Math.max.apply(null, vals);
+  var minV = Math.min.apply(null, vals);
+  var range = maxV - minV || maxV * 0.1;
+  var lo = minV - range * 0.25;
+  var hi = maxV + range * 0.25;
+
+  function xPos(i) { return pad.l + i * cW / (keys.length - 1); }
+  function yPos(v) { return pad.t + cH - ((v - lo) / (hi - lo)) * cH; }
+
+  // Grid linhas horizontais sutis
+  ctx.strokeStyle = 'rgba(75,85,255,0.07)';
+  ctx.lineWidth = 1;
+  [0, 0.5, 1].forEach(function(p) {
+    var y = pad.t + cH * (1 - p);
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke();
+  });
+
+  // Área preenchida
+  ctx.beginPath();
+  ctx.moveTo(xPos(0), yPos(vals[0]));
+  vals.forEach(function(v, i) { if(i > 0) ctx.lineTo(xPos(i), yPos(v)); });
+  ctx.lineTo(xPos(keys.length-1), pad.t + cH);
+  ctx.lineTo(xPos(0), pad.t + cH);
+  ctx.closePath();
+  var grad = ctx.createLinearGradient(0, pad.t, 0, pad.t + cH);
+  grad.addColorStop(0, 'rgba(75,85,255,0.15)');
+  grad.addColorStop(1, 'rgba(75,85,255,0)');
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Linha principal
+  ctx.beginPath();
+  ctx.strokeStyle = '#4b55ff';
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
+  vals.forEach(function(v, i) { i===0 ? ctx.moveTo(xPos(i), yPos(v)) : ctx.lineTo(xPos(i), yPos(v)); });
+  ctx.stroke();
+
+  // Pontos, labels de valor e datas
   keys.forEach(function(k, i) {
     var v = vals[i];
     var x = xPos(i), y = yPos(v);
     var isActive = k === SNAP.data_snapshot;
+
+    // Ponto
     ctx.beginPath();
     ctx.arc(x, y, isActive ? 5 : 4, 0, Math.PI*2);
     ctx.fillStyle = isActive ? '#4b55ff' : 'white';
@@ -692,25 +710,16 @@ function drawHistChart(keys) {
     ctx.lineWidth = 2;
     ctx.fill(); ctx.stroke();
 
-    // Label data
-    ctx.fillStyle = 'rgba(90,91,122,0.8)';
-    ctx.font = '10px monospace';
+    // Valor acima do ponto
+    ctx.fillStyle = isActive ? '#4b55ff' : 'rgba(75,85,255,0.6)';
+    ctx.font = (isActive ? '600 ' : '') + '10px var(--mono, monospace)';
     ctx.textAlign = 'center';
-    ctx.fillText(k, x, H - 6);
-  });
+    ctx.fillText('R$ ' + Math.round(v).toLocaleString('pt-BR'), x, y - 10);
 
-  // Legenda
-  var legends = [{c:'#4b55ff',l:'Total'},{c:'rgba(0,213,86,0.8)',l:'MRR'},{c:'rgba(75,85,255,0.4)',l:'Setup',d:true}];
-  var lx = W - pad.r;
-  legends.slice().reverse().forEach(function(lg) {
-    ctx.font = '10px sans-serif';
-    var tw = ctx.measureText(lg.l).width;
-    lx -= tw + 20;
-    ctx.fillStyle = lg.c;
-    ctx.fillRect(lx, pad.t+2, 12, 3);
-    ctx.fillStyle = 'rgba(90,91,122,0.8)';
-    ctx.textAlign = 'left';
-    ctx.fillText(lg.l, lx+16, pad.t+7);
+    // Data abaixo
+    ctx.fillStyle = 'rgba(90,91,122,0.6)';
+    ctx.font = '10px monospace';
+    ctx.fillText(k, x, H - 6);
   });
 }
 
