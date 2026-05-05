@@ -153,7 +153,31 @@ tr:hover td{background:var(--bg);}
 /* HISTÓRICO */
 .hist-section{margin-top:24px;margin-bottom:32px;}
 .section-title{font-size:11px;font-weight:600;color:var(--text-soft);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;}
-.hist-box{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:24px;text-align:center;color:var(--text-soft);font-size:13px;}
+
+.hist-section{margin-top:24px;margin-bottom:32px;}
+.hist-title{font-size:11px;font-weight:600;color:var(--text-soft);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;}
+.hist-container{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.hist-snapshots{display:flex;gap:0;padding:20px 20px 0;border-bottom:1px solid var(--border);}
+.hist-snap{flex:1;min-width:140px;text-align:center;padding-bottom:16px;cursor:pointer;position:relative;border-bottom:3px solid transparent;transition:all 0.15s;}
+.hist-snap:hover{border-bottom-color:var(--border);}
+.hist-snap.active{border-bottom-color:var(--primary);}
+.hist-snap-dot{width:22px;height:22px;border-radius:50%;margin:0 auto 8px;border:2px solid var(--border);background:var(--bg);transition:all 0.15s;}
+.hist-snap.active .hist-snap-dot{background:var(--primary);border-color:var(--primary);}
+.hist-snap-date{font-family:var(--mono);font-size:10px;color:var(--text-soft);margin-bottom:4px;}
+.hist-snap-val{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--text);}
+.hist-snap-delta{font-size:10px;font-weight:600;margin-top:3px;}
+.delta-up{color:#006e3a;}
+.delta-down{color:#ff008d;}
+.hist-detail{padding:20px;}
+.hist-chart-wrap{height:120px;position:relative;margin-bottom:20px;}
+.hist-diff-title{font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-soft);margin-bottom:10px;}
+.hist-diff-list{display:flex;flex-direction:column;gap:6px;}
+.hist-diff-item{display:flex;align-items:center;gap:10px;font-size:12px;padding:7px 10px;border-radius:8px;background:var(--bg);}
+.diff-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;}
+.diff-icon-new{background:var(--secondary-dim);color:#006e3a;}
+.diff-icon-up{background:var(--primary-dim);color:var(--primary);}
+.diff-badge{font-family:var(--mono);font-size:11px;font-weight:600;margin-left:auto;}
+
 .footer{text-align:center;padding:16px;font-size:11px;color:var(--text-soft);font-family:var(--mono);}
 
 .seg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;}
@@ -173,6 +197,32 @@ tr:hover td{background:var(--bg);}
 .seg-pct{font-size:11px;font-weight:600;}
 .prog-green{background:var(--secondary);}
 .prog-blue{background:var(--primary);}
+
+.metodo-section{margin-top:24px;margin-bottom:32px;}
+.metodo-box{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.metodo-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+.metodo-header-left{display:flex;align-items:center;gap:10px;}
+.metodo-header-icon{width:28px;height:28px;background:var(--primary-dim);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.metodo-header-title{font-size:13px;font-weight:600;color:var(--text);}
+.metodo-header-sub{font-size:11px;color:var(--text-soft);margin-top:1px;}
+.metodo-toggle{font-size:16px;color:var(--text-soft);transition:transform 0.2s;}
+.metodo-toggle.open{transform:rotate(180deg);}
+.metodo-body{padding:20px;display:none;}
+.metodo-body.open{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.metodo-card{background:var(--bg);border-radius:10px;padding:14px 16px;}
+.metodo-card-num{font-size:11px;font-weight:700;color:var(--primary);font-family:var(--mono);margin-bottom:6px;letter-spacing:0.05em;}
+.metodo-card-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.metodo-card-desc{font-size:12px;color:var(--text-mid);line-height:1.6;}
+.metodo-formula{grid-column:1/-1;background:var(--primary-dim);border-radius:10px;padding:14px 16px;}
+.metodo-formula-label{font-size:10px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--primary);margin-bottom:8px;}
+.metodo-formula-eq{font-family:var(--mono);font-size:12px;color:var(--text);line-height:1.8;}
+.metodo-formula-eq span{color:var(--primary);font-weight:600;}
+.metodo-table{grid-column:1/-1;}
+.metodo-table table{width:100%;border-collapse:collapse;font-size:12px;}
+.metodo-table th{font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-soft);padding:7px 12px;text-align:left;background:var(--bg);border-bottom:1px solid var(--border);}
+.metodo-table td{padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top;}
+.metodo-table tr:last-child td{border-bottom:none;}
+.metodo-note{grid-column:1/-1;font-size:11px;color:var(--text-soft);line-height:1.6;padding:10px 14px;background:var(--bg);border-radius:8px;border-left:3px solid var(--border);}
 </style>
 </head>
 <body>
@@ -205,6 +255,106 @@ tr:hover td{background:var(--bg);}
 
     <!-- ABA PIPELINE -->
     <div class="tab-content active" id="tab-pipeline">
+
+    <!-- METODOLOGIA -->
+    <div class="metodo-section">
+      <div class="metodo-box">
+        <div class="metodo-header" onclick="toggleMetodo()">
+          <div class="metodo-header-left">
+            <div class="metodo-header-icon">📐</div>
+            <div>
+              <div class="metodo-header-title">Como este forecast é calculado</div>
+              <div class="metodo-header-sub">Racional metodológico — clique para expandir</div>
+            </div>
+          </div>
+          <div class="metodo-toggle" id="metodo-toggle">▼</div>
+        </div>
+        <div class="metodo-body" id="metodo-body">
+
+          <div class="metodo-formula">
+            <div class="metodo-formula-label">Fórmula base — por deal</div>
+            <div class="metodo-formula-eq">
+              <span>Receita esperada</span> = Valor do deal × Taxa de conversão da etapa<br>
+              <span>Data de fechamento projetada</span> = Data de entrada na etapa + (Ciclo mediano − Dias já na etapa)
+            </div>
+          </div>
+
+          <div class="metodo-card">
+            <div class="metodo-card-num">01 · ETAPAS</div>
+            <div class="metodo-card-title">Quais negócios entram</div>
+            <div class="metodo-card-desc">
+              Apenas deals nas etapas <strong>Demonstração → Xeque-Mate</strong> são considerados. Prospecção e Pesquisa são excluídas para evitar distorções — a primeira por baixa qualificação, a segunda por outliers de ticket.
+            </div>
+          </div>
+
+          <div class="metodo-card">
+            <div class="metodo-card-num">02 · CICLO</div>
+            <div class="metodo-card-title">Tempo até o fechamento</div>
+            <div class="metodo-card-desc">
+              Calculado como <strong>mediana histórica</strong> do tempo entre a entrada na etapa e o ganho, segmentado por tipo de negócio. Base: ~8–9d. Nova empresa: ~10–11d. Usa-se mediana (não média) para reduzir sensibilidade a outliers.
+            </div>
+          </div>
+
+          <div class="metodo-card">
+            <div class="metodo-card-num">03 · TAXA</div>
+            <div class="metodo-card-title">Probabilidade de fechar</div>
+            <div class="metodo-card-desc">
+              Taxa real calculada sobre o histórico jan–mai/26: deals ganhos ÷ (ganhos + perdidos) por etapa e segmento. Quanto mais avançada a etapa, maior a taxa — Xeque-Mate tem ~85% de conversão.
+            </div>
+          </div>
+
+          <div class="metodo-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Etapa</th>
+                  <th>Taxa — Base</th>
+                  <th>Taxa — Nova empresa</th>
+                  <th>Ciclo mediano — Base</th>
+                  <th>Ciclo mediano — Novos</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Demonstração</td><td>40,3%</td><td>28,1%</td><td>8,0 dias</td><td>10,0 dias</td></tr>
+                <tr><td>Confecção da Proposta</td><td>50,9%</td><td>34,0%</td><td>6,0 dias</td><td>8,0 dias</td></tr>
+                <tr><td>Proposta Enviada/Neg.</td><td>61,2%</td><td>44,1%</td><td>4,5 dias</td><td>5,5 dias</td></tr>
+                <tr><td>Xeque-Mate</td><td>88,2%</td><td>78,3%</td><td>2,0 dias</td><td>2,5 dias</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="metodo-card">
+            <div class="metodo-card-num">04 · VALOR</div>
+            <div class="metodo-card-title">MRR e Setup</div>
+            <div class="metodo-card-desc">
+              Usa o valor real do deal quando disponível no HubSpot. Se não preenchido, aplica o <strong>ticket médio histórico</strong> como fallback: R$ 10.846 (base) e R$ 14.311 (novos). MRR e Setup são campos separados no CRM.
+            </div>
+          </div>
+
+          <div class="metodo-card">
+            <div class="metodo-card-num">05 · FILTRO</div>
+            <div class="metodo-card-title">Horizonte temporal</div>
+            <div class="metodo-card-desc">
+              Só entram no forecast deals cuja <strong>data de fechamento projetada</strong> cai dentro do mês vigente. Deals com projeção fora do mês ficam no pipeline mas não contam para o número do mês.
+            </div>
+          </div>
+
+          <div class="metodo-card">
+            <div class="metodo-card-num">06 · HISTÓRICO</div>
+            <div class="metodo-card-title">Calibração do modelo</div>
+            <div class="metodo-card-desc">
+              Parâmetros calibrados com dados reais de <strong>jan–mai/26</strong> (46+ deals ganhos). Conforme novos meses fecham, os ciclos e taxas são recalculados para refletir o comportamento real da MáximaTech.
+            </div>
+          </div>
+
+          <div class="metodo-note">
+            ⚠️ <strong>Limitações conhecidas:</strong> ciclos das etapas intermediárias (Confecção, Proposta) são estimados por proporção — o HubSpot não registra a data exata de entrada nessas etapas neste relatório. Deals com mais de 30 dias na mesma etapa podem ter probabilidade superestimada. Recomenda-se revisão semanal do pipeline para manter o CRM atualizado.
+          </div>
+
+        </div>
+      </div>
+    </div>
+
       <div class="meta-row">
         <div class="meta-card">
           <div class="meta-top"><div class="meta-title">Receita total</div><div class="meta-pct" id="m-tot-p"></div></div>
@@ -351,8 +501,15 @@ tr:hover td{background:var(--bg);}
         </table>
       </div>
       <div class="hist-section">
-        <div class="section-title">Histórico de snapshots</div>
-        <div class="hist-box" id="hist-timeline"></div>
+        <div class="hist-title">Histórico de snapshots</div>
+        <div class="hist-container">
+          <div class="hist-snapshots" id="hist-snapshots"></div>
+          <div class="hist-detail" id="hist-detail">
+            <div class="hist-chart-wrap"><canvas id="hist-chart"></canvas></div>
+            <div class="hist-diff-title">O que mudou</div>
+            <div class="hist-diff-list" id="hist-diff-list"></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -378,6 +535,8 @@ tr:hover td{background:var(--bg);}
     </div>
 
   </div>
+
+
   <div class="footer">MáximaTech · Forecast Comercial · Snapshot: <span id="fdate"></span></div>
 </div>
 
@@ -445,32 +604,177 @@ function login() {
 
 
 function renderHistorico() {
-  var el = document.getElementById('hist-timeline');
-  if (!el) return;
+  var snapsEl = document.getElementById('hist-snapshots');
+  var diffEl  = document.getElementById('hist-diff-list');
+  if (!snapsEl) return;
+
   var keys = Object.keys(HISTORICO).sort();
-  if (keys.length < 2) {
-    el.textContent = 'Adicione novos snapshots para ver a evolução aqui.';
-    return;
-  }
-  var out = '<div style="display:flex;gap:0;overflow-x:auto;padding:4px 0;">';
-  keys.forEach(function(k, i) {
-    var s = HISTORICO[k];
-    var r = s.resumo;
+  if (keys.length === 0) return;
+
+  // Montar pontos do snap
+  snapsEl.innerHTML = keys.map(function(k, i) {
+    var r = HISTORICO[k].resumo;
     var prev = i > 0 ? HISTORICO[keys[i-1]].resumo : null;
     var delta = prev ? r.receita_esperada - prev.receita_esperada : null;
-    var isLast = i === keys.length - 1;
+    var isLast = k === SNAP.data_snapshot;
     var dHtml = delta !== null
-      ? '<div style="font-size:10px;font-weight:600;margin-top:3px;color:'+(delta>=0?'#006e3a':'#ff008d')+'">'+(delta>=0?'↑':'↓')+' R$ '+Math.abs(Math.round(delta)).toLocaleString('pt-BR')+'</div>'
-      : '';
-    out += '<div style="flex:1;min-width:140px;text-align:center;padding:0 12px;cursor:pointer;" onclick="loadSnap(\''+k+'\')">'
-      + '<div style="width:20px;height:20px;border-radius:50%;margin:0 auto 8px;border:2px solid '+(isLast?'var(--primary)':'var(--border)')+';background:'+(isLast?'var(--primary)':'var(--bg)')+'"></div>'
-      + '<div style="font-family:var(--mono);font-size:10px;color:var(--text-soft);margin-bottom:3px;">'+k+'</div>'
-      + '<div style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text);">R$ '+Math.round(r.receita_esperada).toLocaleString('pt-BR')+'</div>'
+      ? '<div class="hist-snap-delta '+(delta>=0?'delta-up':'delta-down')+'">'+(delta>=0?'↑':'↓')+' R$ '+Math.abs(Math.round(delta)).toLocaleString('pt-BR')+'</div>'
+      : '<div class="hist-snap-delta" style="color:var(--text-soft)">snapshot inicial</div>';
+    return '<div class="hist-snap'+(isLast?' active':'')+'" data-key="'+k+'" style="cursor:pointer">'
+      + '<div class="hist-snap-dot"></div>'
+      + '<div class="hist-snap-date">'+k+'</div>'
+      + '<div class="hist-snap-val">R$ '+Math.round(r.receita_esperada).toLocaleString('pt-BR')+'</div>'
       + dHtml + '</div>';
-  });
-  out += '</div>';
-  el.innerHTML = out;
+  }).join('');
+
+  // Gráfico de linha
+  drawHistChart(keys);
+
+  // Diff do snapshot atual vs anterior
+  renderDiff(keys);
 }
+
+function drawHistChart(keys) {
+  var canvas = document.getElementById('hist-chart');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.parentElement.offsetWidth;
+  var H = 120;
+  canvas.width = W; canvas.height = H;
+
+  var vals = keys.map(function(k){ return HISTORICO[k].resumo.receita_esperada; });
+  var mrrVals = keys.map(function(k){ return HISTORICO[k].resumo.mrr_esperado; });
+  var setupVals = keys.map(function(k){ return HISTORICO[k].resumo.setup_esperado; });
+
+  var maxV = Math.max.apply(null, vals);
+  var minV = Math.min.apply(null, vals.concat(mrrVals)) * 0.85;
+  var pad = {t:10, b:28, l:10, r:10};
+  var chartW = W - pad.l - pad.r;
+  var chartH = H - pad.t - pad.b;
+
+  function xPos(i) { return pad.l + (keys.length < 2 ? chartW/2 : i * chartW / (keys.length-1)); }
+  function yPos(v) { return pad.t + chartH - ((v - minV) / (maxV - minV + 1)) * chartH; }
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(75,85,255,0.06)';
+  ctx.lineWidth = 1;
+  [0.25, 0.5, 0.75, 1].forEach(function(p) {
+    var y = pad.t + chartH * (1-p);
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W-pad.r, y); ctx.stroke();
+  });
+
+  function drawLine(data, color, dashed) {
+    if (data.length < 2) return;
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    if (dashed) ctx.setLineDash([4,3]); else ctx.setLineDash([]);
+    data.forEach(function(v, i) { i===0 ? ctx.moveTo(xPos(i), yPos(v)) : ctx.lineTo(xPos(i), yPos(v)); });
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  drawLine(setupVals, 'rgba(75,85,255,0.25)', true);
+  drawLine(mrrVals, 'rgba(0,213,86,0.6)', false);
+  drawLine(vals, '#4b55ff', false);
+
+  // Pontos e labels
+  keys.forEach(function(k, i) {
+    var v = vals[i];
+    var x = xPos(i), y = yPos(v);
+    var isActive = k === SNAP.data_snapshot;
+    ctx.beginPath();
+    ctx.arc(x, y, isActive ? 5 : 4, 0, Math.PI*2);
+    ctx.fillStyle = isActive ? '#4b55ff' : 'white';
+    ctx.strokeStyle = '#4b55ff';
+    ctx.lineWidth = 2;
+    ctx.fill(); ctx.stroke();
+
+    // Label data
+    ctx.fillStyle = 'rgba(90,91,122,0.8)';
+    ctx.font = '10px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(k, x, H - 6);
+  });
+
+  // Legenda
+  var legends = [{c:'#4b55ff',l:'Total'},{c:'rgba(0,213,86,0.8)',l:'MRR'},{c:'rgba(75,85,255,0.4)',l:'Setup',d:true}];
+  var lx = W - pad.r;
+  legends.slice().reverse().forEach(function(lg) {
+    ctx.font = '10px sans-serif';
+    var tw = ctx.measureText(lg.l).width;
+    lx -= tw + 20;
+    ctx.fillStyle = lg.c;
+    ctx.fillRect(lx, pad.t+2, 12, 3);
+    ctx.fillStyle = 'rgba(90,91,122,0.8)';
+    ctx.textAlign = 'left';
+    ctx.fillText(lg.l, lx+16, pad.t+7);
+  });
+}
+
+function renderDiff(keys) {
+  var diffEl = document.getElementById('hist-diff-list');
+  if (!diffEl || keys.length < 2) {
+    if (diffEl) diffEl.innerHTML = '<div style="color:var(--text-soft);font-size:12px;padding:4px 0">Adicione mais snapshots para ver comparações.</div>';
+    return;
+  }
+
+  var curKey = SNAP.data_snapshot;
+  var curIdx = keys.indexOf(curKey);
+  if (curIdx <= 0) {
+    diffEl.innerHTML = '<div style="color:var(--text-soft);font-size:12px;padding:4px 0">Este é o primeiro snapshot — sem comparação disponível.</div>';
+    return;
+  }
+
+  var prevKey = keys[curIdx - 1];
+  var cur = HISTORICO[curKey];
+  var prev = HISTORICO[prevKey];
+
+  var items = [];
+
+  // Deals
+  var deltaDeals = cur.resumo.total_deals - prev.resumo.total_deals;
+  if (deltaDeals !== 0) {
+    var ids_cur = cur.deals.map(function(d){return d.id;});
+    var ids_prev = prev.deals.map(function(d){return d.id;});
+    var novos = ids_cur.filter(function(id){ return ids_prev.indexOf(id) < 0; });
+    var map_cur = {};
+    cur.deals.forEach(function(d){ map_cur[d.id]=d; });
+    novos.forEach(function(id) {
+      var d = map_cur[id];
+      items.push({icon:'new', label:'Novo deal — '+d.vendedor.split(' ')[0]+' ('+d.etapa+')', badge: 'R$ '+Math.round(d.total).toLocaleString('pt-BR'), color:'#006e3a'});
+    });
+  }
+
+  // Receita
+  var deltaTotal = cur.resumo.receita_esperada - prev.resumo.receita_esperada;
+  var deltaMrr   = cur.resumo.mrr_esperado - prev.resumo.mrr_esperado;
+  items.push({icon:'up', label:'Receita projetada', badge:(deltaTotal>=0?'+':'')+'R$ '+Math.round(deltaTotal).toLocaleString('pt-BR'), color: deltaTotal>=0?'#006e3a':'#ff008d'});
+  items.push({icon:'up', label:'MRR projetado', badge:(deltaMrr>=0?'+':'')+'R$ '+Math.round(deltaMrr).toLocaleString('pt-BR'), color: deltaMrr>=0?'#006e3a':'#ff008d'});
+
+  // Ranking
+  var rk_cur = {}; cur.ranking.forEach(function(r){ rk_cur[r.vendedor]=r; });
+  var rk_prev = {}; prev.ranking.forEach(function(r){ rk_prev[r.vendedor]=r; });
+  Object.keys(rk_cur).forEach(function(v) {
+    var rc = rk_cur[v], rp = rk_prev[v];
+    if (rp && Math.abs(rc.pct - rp.pct) > 0.5) {
+      var dp = rc.pct - rp.pct;
+      items.push({icon:'up', label: v.split(' ')[0]+' '+v.split(' ').pop()+': '+rp.pct.toFixed(1)+'% → '+rc.pct.toFixed(1)+'%', badge:(dp>=0?'+':'')+dp.toFixed(1)+'pp', color: dp>=0?'#3941c8':'#ff008d'});
+    }
+  });
+
+  diffEl.innerHTML = items.map(function(it) {
+    return '<div class="hist-diff-item">'
+      + '<div class="diff-icon '+(it.icon==='new'?'diff-icon-new':'diff-icon-up')+'">'+(it.icon==='new'?'★':'↑')+'</div>'
+      + '<span>'+it.label+'</span>'
+      + '<span class="diff-badge" style="color:'+it.color+'">'+it.badge+'</span>'
+      + '</div>';
+  }).join('');
+}
+
+
 
 function loadSnap(key) {
   var s = HISTORICO[key];
@@ -706,8 +1010,29 @@ function renderVendedorDeals(nome) {
 }
 
 /* ── EVENTOS ── */
+
+function toggleMetodo() {
+  var body = document.getElementById('metodo-body');
+  var icon = document.getElementById('metodo-toggle');
+  if (body.classList.contains('open')) {
+    body.classList.remove('open');
+    icon.classList.remove('open');
+  } else {
+    body.classList.add('open');
+    icon.classList.add('open');
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('login-btn').addEventListener('click', login);
+
+  // Histórico: clique nos snapshots via delegação
+  document.addEventListener('click', function(e) {
+    var snap = e.target.closest('[data-key]');
+    if (snap && snap.closest('#hist-snapshots')) {
+      loadSnap(snap.getAttribute('data-key'));
+    }
+  });
   document.getElementById('pwd').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') login();
   });
