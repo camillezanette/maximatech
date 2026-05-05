@@ -352,7 +352,7 @@ tr:hover td{background:var(--bg);}
       </div>
       <div class="hist-section">
         <div class="section-title">Histórico de snapshots</div>
-        <div class="hist-box">Adicione novos snapshots semanais para ver a evolução do pipeline aqui.</div>
+        <div class="hist-box" id="hist-timeline"></div>
       </div>
     </div>
 
@@ -443,6 +443,42 @@ function login() {
     });
   }
 
+
+function renderHistorico() {
+  var el = document.getElementById('hist-timeline');
+  if (!el) return;
+  var keys = Object.keys(HISTORICO).sort();
+  if (keys.length < 2) {
+    el.textContent = 'Adicione novos snapshots para ver a evolução aqui.';
+    return;
+  }
+  var out = '<div style="display:flex;gap:0;overflow-x:auto;padding:4px 0;">';
+  keys.forEach(function(k, i) {
+    var s = HISTORICO[k];
+    var r = s.resumo;
+    var prev = i > 0 ? HISTORICO[keys[i-1]].resumo : null;
+    var delta = prev ? r.receita_esperada - prev.receita_esperada : null;
+    var isLast = i === keys.length - 1;
+    var dHtml = delta !== null
+      ? '<div style="font-size:10px;font-weight:600;margin-top:3px;color:'+(delta>=0?'#006e3a':'#ff008d')+'">'+(delta>=0?'↑':'↓')+' R$ '+Math.abs(Math.round(delta)).toLocaleString('pt-BR')+'</div>'
+      : '';
+    out += '<div style="flex:1;min-width:140px;text-align:center;padding:0 12px;cursor:pointer;" onclick="loadSnap(\''+k+'\')">'
+      + '<div style="width:20px;height:20px;border-radius:50%;margin:0 auto 8px;border:2px solid '+(isLast?'var(--primary)':'var(--border)')+';background:'+(isLast?'var(--primary)':'var(--bg)')+'"></div>'
+      + '<div style="font-family:var(--mono);font-size:10px;color:var(--text-soft);margin-bottom:3px;">'+k+'</div>'
+      + '<div style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text);">R$ '+Math.round(r.receita_esperada).toLocaleString('pt-BR')+'</div>'
+      + dHtml + '</div>';
+  });
+  out += '</div>';
+  el.innerHTML = out;
+}
+
+function loadSnap(key) {
+  var s = HISTORICO[key];
+  if (!s) return;
+  SNAP = s; DEALS = s.deals; RANKING = s.ranking || RANKING;
+  init();
+}
+
 function init() {
   var r = SNAP.resumo;
   document.getElementById('tdate').textContent = SNAP.data_snapshot;
@@ -488,6 +524,7 @@ function init() {
 
   render();
   renderVendedores();
+  renderHistorico();
 }
 
 /* ── PIPELINE ── */
