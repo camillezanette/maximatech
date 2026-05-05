@@ -256,105 +256,74 @@ tr:hover td{background:var(--bg);}
     <!-- ABA PIPELINE -->
     <div class="tab-content active" id="tab-pipeline">
 
-    <!-- METODOLOGIA -->
-    <div class="metodo-section">
-      <div class="metodo-box">
-        <div class="metodo-header" onclick="toggleMetodo()">
-          <div class="metodo-header-left">
-            <div class="metodo-header-icon">📐</div>
-            <div>
-              <div class="metodo-header-title">Como este forecast é calculado</div>
-              <div class="metodo-header-sub">Racional metodológico — clique para expandir</div>
+      <!-- METODOLOGIA -->
+      <div class="metodo-section">
+        <div class="metodo-box">
+          <div class="metodo-header" onclick="toggleMetodo()">
+            <div class="metodo-header-left">
+              <div class="metodo-header-icon">📐</div>
+              <div>
+                <div class="metodo-header-title">Como este forecast é calculado</div>
+                <div class="metodo-header-sub">Racional metodológico — clique para expandir</div>
+              </div>
             </div>
+            <div class="metodo-toggle" id="metodo-toggle">▼</div>
           </div>
-          <div class="metodo-toggle" id="metodo-toggle">▼</div>
-        </div>
-        <div class="metodo-body" id="metodo-body">
-
-          <div class="metodo-formula">
-            <div class="metodo-formula-label">Fórmula base — por deal</div>
-            <div class="metodo-formula-eq">
-              <span>Receita esperada</span> = Valor do deal × Taxa de conversão da etapa<br>
-              <span>Data de fechamento projetada</span> = Data de entrada na etapa + (Ciclo mediano − Dias já na etapa)
+          <div class="metodo-body" id="metodo-body">
+            <div class="metodo-formula">
+              <div class="metodo-formula-label">Fórmula base — por deal</div>
+              <div class="metodo-formula-eq">
+                <span>Receita esperada</span> = Valor do deal × Taxa de conversão da etapa<br>
+                <span>Data de fechamento projetada</span> = Data de entrada na etapa + (Ciclo mediano − Dias já na etapa)
+              </div>
             </div>
-          </div>
-
-          <div class="metodo-card">
-            <div class="metodo-card-num">01 · ETAPAS</div>
-            <div class="metodo-card-title">Quais negócios entram</div>
-            <div class="metodo-card-desc">
-              Apenas deals nas etapas <strong>Demonstração → Xeque-Mate</strong> são considerados. Prospecção e Pesquisa são excluídas para evitar distorções — a primeira por baixa qualificação, a segunda por outliers de ticket.
+            <div class="metodo-card">
+              <div class="metodo-card-num">01 · ETAPAS</div>
+              <div class="metodo-card-title">Quais negócios entram</div>
+              <div class="metodo-card-desc">Apenas deals nas etapas <strong>Demonstração → Xeque-Mate</strong> são considerados. Prospecção e Pesquisa são excluídas para evitar distorções — a primeira por baixa qualificação, a segunda por outliers de ticket.</div>
             </div>
-          </div>
-
-          <div class="metodo-card">
-            <div class="metodo-card-num">02 · CICLO</div>
-            <div class="metodo-card-title">Tempo até o fechamento</div>
-            <div class="metodo-card-desc">
-              Calculado como <strong>mediana histórica</strong> do tempo entre a entrada na etapa e o ganho, segmentado por tipo de negócio. Base: ~8–9d. Nova empresa: ~10–11d. Usa-se mediana (não média) para reduzir sensibilidade a outliers.
+            <div class="metodo-card">
+              <div class="metodo-card-num">02 · CICLO</div>
+              <div class="metodo-card-title">Tempo até o fechamento</div>
+              <div class="metodo-card-desc">Calculado como <strong>mediana histórica</strong> do tempo entre a entrada na etapa e o ganho, segmentado por tipo de negócio. Base: ~8–9d. Nova empresa: ~10–11d. Usa-se mediana para reduzir sensibilidade a outliers.</div>
             </div>
-          </div>
-
-          <div class="metodo-card">
-            <div class="metodo-card-num">03 · TAXA</div>
-            <div class="metodo-card-title">Probabilidade de fechar</div>
-            <div class="metodo-card-desc">
-              Taxa real calculada sobre o histórico jan–mai/26: deals ganhos ÷ (ganhos + perdidos) por etapa e segmento. Quanto mais avançada a etapa, maior a taxa — Xeque-Mate tem ~85% de conversão.
+            <div class="metodo-card">
+              <div class="metodo-card-num">03 · TAXA</div>
+              <div class="metodo-card-title">Probabilidade de fechar</div>
+              <div class="metodo-card-desc">Taxa real calculada sobre o histórico jan–mai/26: deals ganhos ÷ (ganhos + perdidos) por etapa e segmento. Quanto mais avançada a etapa, maior a taxa — Xeque-Mate tem ~85% de conversão.</div>
             </div>
-          </div>
-
-          <div class="metodo-table">
-            <table>
-              <thead>
-                <tr>
-                  <th>Etapa</th>
-                  <th>Taxa — Base</th>
-                  <th>Taxa — Nova empresa</th>
-                  <th>Ciclo mediano — Base</th>
-                  <th>Ciclo mediano — Novos</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td>Demonstração</td><td>40,3%</td><td>28,1%</td><td>8,0 dias</td><td>10,0 dias</td></tr>
-                <tr><td>Confecção da Proposta</td><td>50,9%</td><td>34,0%</td><td>6,0 dias</td><td>8,0 dias</td></tr>
-                <tr><td>Proposta Enviada/Neg.</td><td>61,2%</td><td>44,1%</td><td>4,5 dias</td><td>5,5 dias</td></tr>
-                <tr><td>Xeque-Mate</td><td>88,2%</td><td>78,3%</td><td>2,0 dias</td><td>2,5 dias</td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="metodo-card">
-            <div class="metodo-card-num">04 · VALOR</div>
-            <div class="metodo-card-title">MRR e Setup</div>
-            <div class="metodo-card-desc">
-              Usa o valor real do deal quando disponível no HubSpot. Se não preenchido, aplica o <strong>ticket médio histórico</strong> como fallback: R$ 10.846 (base) e R$ 14.311 (novos). MRR e Setup são campos separados no CRM.
+            <div class="metodo-table">
+              <table>
+                <thead><tr><th>Etapa</th><th>Taxa — Base</th><th>Taxa — Nova empresa</th><th>Ciclo mediano — Base</th><th>Ciclo mediano — Novos</th></tr></thead>
+                <tbody>
+                  <tr><td>Demonstração</td><td>40,3%</td><td>28,1%</td><td>8,0 dias</td><td>10,0 dias</td></tr>
+                  <tr><td>Confecção da Proposta</td><td>50,9%</td><td>34,0%</td><td>6,0 dias</td><td>8,0 dias</td></tr>
+                  <tr><td>Proposta Enviada/Neg.</td><td>61,2%</td><td>44,1%</td><td>4,5 dias</td><td>5,5 dias</td></tr>
+                  <tr><td>Xeque-Mate</td><td>88,2%</td><td>78,3%</td><td>2,0 dias</td><td>2,5 dias</td></tr>
+                </tbody>
+              </table>
             </div>
-          </div>
-
-          <div class="metodo-card">
-            <div class="metodo-card-num">05 · FILTRO</div>
-            <div class="metodo-card-title">Horizonte temporal</div>
-            <div class="metodo-card-desc">
-              Só entram no forecast deals cuja <strong>data de fechamento projetada</strong> cai dentro do mês vigente. Deals com projeção fora do mês ficam no pipeline mas não contam para o número do mês.
+            <div class="metodo-card">
+              <div class="metodo-card-num">04 · VALOR</div>
+              <div class="metodo-card-title">MRR e Setup</div>
+              <div class="metodo-card-desc">Usa o valor real do deal quando disponível no HubSpot. Se não preenchido, aplica o <strong>ticket médio histórico</strong> como fallback: R$ 10.846 (base) e R$ 14.311 (novos).</div>
             </div>
-          </div>
-
-          <div class="metodo-card">
-            <div class="metodo-card-num">06 · HISTÓRICO</div>
-            <div class="metodo-card-title">Calibração do modelo</div>
-            <div class="metodo-card-desc">
-              Parâmetros calibrados com dados reais de <strong>jan–mai/26</strong> (46+ deals ganhos). Conforme novos meses fecham, os ciclos e taxas são recalculados para refletir o comportamento real da MáximaTech.
+            <div class="metodo-card">
+              <div class="metodo-card-num">05 · FILTRO</div>
+              <div class="metodo-card-title">Horizonte temporal</div>
+              <div class="metodo-card-desc">Só entram no forecast deals cuja <strong>data de fechamento projetada</strong> cai dentro do mês vigente. Deals com projeção fora do mês ficam no pipeline mas não contam para o número do mês.</div>
             </div>
+            <div class="metodo-card">
+              <div class="metodo-card-num">06 · HISTÓRICO</div>
+              <div class="metodo-card-title">Calibração do modelo</div>
+              <div class="metodo-card-desc">Parâmetros calibrados com dados reais de <strong>jan–mai/26</strong> (46+ deals ganhos). Conforme novos meses fecham, os ciclos e taxas são recalculados para refletir o comportamento real da MáximaTech.</div>
+            </div>
+            <div class="metodo-note">⚠️ <strong>Limitações conhecidas:</strong> ciclos das etapas intermediárias são estimados por proporção. Deals com mais de 30 dias na mesma etapa podem ter probabilidade superestimada. Recomenda-se revisão semanal do pipeline para manter o CRM atualizado.</div>
           </div>
-
-          <div class="metodo-note">
-            ⚠️ <strong>Limitações conhecidas:</strong> ciclos das etapas intermediárias (Confecção, Proposta) são estimados por proporção — o HubSpot não registra a data exata de entrada nessas etapas neste relatório. Deals com mais de 30 dias na mesma etapa podem ter probabilidade superestimada. Recomenda-se revisão semanal do pipeline para manter o CRM atualizado.
-          </div>
-
         </div>
       </div>
-    </div>
 
+      <!-- CARDS TOPO -->
       <div class="meta-row">
         <div class="meta-card">
           <div class="meta-top"><div class="meta-title">Receita total</div><div class="meta-pct" id="m-tot-p"></div></div>
@@ -372,99 +341,58 @@ tr:hover td{background:var(--bg);}
           <div class="prog"><div class="prog-fill" id="m-setup-b"></div></div>
         </div>
       </div>
-      <div class="seg-grid">
 
-        <!-- BASE -->
+      <!-- CARDS SEGMENTO -->
+      <div class="seg-grid">
         <div class="seg-group seg-group-base">
           <div class="seg-group-title">Base</div>
           <div class="seg-group-cards">
-
             <div class="seg-metric-card">
               <div class="seg-metric-label">Receita total</div>
-              <div class="seg-metric-row">
-                <span class="seg-metric-val" id="c-base"></span>
-                <span class="seg-metric-meta" id="c-base-d"></span>
-              </div>
-              <div class="seg-metric-sub">
-                <span>meta <span id="c-base-meta-total"></span></span>
-                <span class="seg-pct" id="c-base-pct-total"></span>
-              </div>
+              <div class="seg-metric-row"><span class="seg-metric-val" id="c-base"></span><span class="seg-metric-meta" id="c-base-d"></span></div>
+              <div class="seg-metric-sub"><span>meta <span id="c-base-meta-total"></span></span><span class="seg-pct" id="c-base-pct-total"></span></div>
               <div class="prog"><div class="prog-fill prog-green" id="c-base-bar-total"></div></div>
             </div>
-
             <div class="seg-metric-card">
               <div class="seg-metric-label">MRR</div>
-              <div class="seg-metric-row">
-                <span class="seg-metric-val" id="c-base-mrr"></span>
-              </div>
-              <div class="seg-metric-sub">
-                <span>meta <span id="c-base-meta-mrr"></span></span>
-                <span class="seg-pct" id="c-base-pct-mrr"></span>
-              </div>
+              <div class="seg-metric-row"><span class="seg-metric-val" id="c-base-mrr"></span></div>
+              <div class="seg-metric-sub"><span>meta <span id="c-base-meta-mrr"></span></span><span class="seg-pct" id="c-base-pct-mrr"></span></div>
               <div class="prog"><div class="prog-fill prog-green" id="c-base-bar-mrr"></div></div>
             </div>
-
             <div class="seg-metric-card">
               <div class="seg-metric-label">Setup</div>
-              <div class="seg-metric-row">
-                <span class="seg-metric-val" id="c-base-setup"></span>
-              </div>
-              <div class="seg-metric-sub">
-                <span>meta <span id="c-base-meta-setup"></span></span>
-                <span class="seg-pct" id="c-base-pct-setup"></span>
-              </div>
+              <div class="seg-metric-row"><span class="seg-metric-val" id="c-base-setup"></span></div>
+              <div class="seg-metric-sub"><span>meta <span id="c-base-meta-setup"></span></span><span class="seg-pct" id="c-base-pct-setup"></span></div>
               <div class="prog"><div class="prog-fill prog-green" id="c-base-bar-setup"></div></div>
             </div>
-
           </div>
         </div>
-
-        <!-- NOVOS -->
         <div class="seg-group seg-group-novos">
           <div class="seg-group-title">Nova empresa</div>
           <div class="seg-group-cards">
-
             <div class="seg-metric-card">
               <div class="seg-metric-label">Receita total</div>
-              <div class="seg-metric-row">
-                <span class="seg-metric-val" id="c-novos"></span>
-                <span class="seg-metric-meta" id="c-novos-d"></span>
-              </div>
-              <div class="seg-metric-sub">
-                <span>meta <span id="c-novos-meta-total"></span></span>
-                <span class="seg-pct" id="c-novos-pct-total"></span>
-              </div>
+              <div class="seg-metric-row"><span class="seg-metric-val" id="c-novos"></span><span class="seg-metric-meta" id="c-novos-d"></span></div>
+              <div class="seg-metric-sub"><span>meta <span id="c-novos-meta-total"></span></span><span class="seg-pct" id="c-novos-pct-total"></span></div>
               <div class="prog"><div class="prog-fill prog-blue" id="c-novos-bar-total"></div></div>
             </div>
-
             <div class="seg-metric-card">
               <div class="seg-metric-label">MRR</div>
-              <div class="seg-metric-row">
-                <span class="seg-metric-val" id="c-novos-mrr"></span>
-              </div>
-              <div class="seg-metric-sub">
-                <span>meta <span id="c-novos-meta-mrr"></span></span>
-                <span class="seg-pct" id="c-novos-pct-mrr"></span>
-              </div>
+              <div class="seg-metric-row"><span class="seg-metric-val" id="c-novos-mrr"></span></div>
+              <div class="seg-metric-sub"><span>meta <span id="c-novos-meta-mrr"></span></span><span class="seg-pct" id="c-novos-pct-mrr"></span></div>
               <div class="prog"><div class="prog-fill prog-blue" id="c-novos-bar-mrr"></div></div>
             </div>
-
             <div class="seg-metric-card">
               <div class="seg-metric-label">Setup</div>
-              <div class="seg-metric-row">
-                <span class="seg-metric-val" id="c-novos-setup"></span>
-              </div>
-              <div class="seg-metric-sub">
-                <span>meta <span id="c-novos-meta-setup"></span></span>
-                <span class="seg-pct" id="c-novos-pct-setup"></span>
-              </div>
+              <div class="seg-metric-row"><span class="seg-metric-val" id="c-novos-setup"></span></div>
+              <div class="seg-metric-sub"><span>meta <span id="c-novos-meta-setup"></span></span><span class="seg-pct" id="c-novos-pct-setup"></span></div>
               <div class="prog"><div class="prog-fill prog-blue" id="c-novos-bar-setup"></div></div>
             </div>
-
           </div>
         </div>
-
       </div>
+
+      <!-- FILTROS -->
       <div class="filters">
         <span class="filter-label">Etapa</span>
         <button class="fbtn on" data-group="etapa" data-val="all">Todas</button>
@@ -481,6 +409,8 @@ tr:hover td{background:var(--bg);}
         <input class="fsearch" type="text" id="fsearch" placeholder="Buscar vendedor..." />
         <span class="fcount" id="fcount"></span>
       </div>
+
+      <!-- TABELA -->
       <div class="table-wrap">
         <table>
           <thead><tr>
@@ -500,6 +430,8 @@ tr:hover td{background:var(--bg);}
           <tbody id="tbody"></tbody>
         </table>
       </div>
+
+      <!-- HISTÓRICO -->
       <div class="hist-section">
         <div class="hist-title">Histórico de snapshots</div>
         <div class="hist-container">
@@ -511,6 +443,7 @@ tr:hover td{background:var(--bg);}
           </div>
         </div>
       </div>
+
     </div>
 
     <!-- ABA VENDEDORES -->
@@ -557,9 +490,9 @@ function nomeAbrev(n) {
   return parts[0] + ' ' + parts[parts.length-1];
 }
 
-var F = {etapa:'all', tipo:'all', search:''};
+var F = {etapa:[], tipo:[], search:''};
 var SK = 'receita_esperada', SD = -1;
-var VF = {vtipo:'all', vsort:'pct'};
+var VF = {vtipo:[], vsort:'pct'};
 var VSD = -1;
 var selectedVendedor = null;
 var VDK = 'receita_esperada', VDSD = -1;
@@ -637,54 +570,70 @@ function renderHistorico() {
 function drawHistChart(keys) {
   var canvas = document.getElementById('hist-chart');
   if (!canvas) return;
-  var ctx = canvas.getContext('2d');
-  var W = canvas.parentElement.offsetWidth;
+  var W = canvas.parentElement.offsetWidth || 600;
   var H = 120;
   canvas.width = W; canvas.height = H;
-
-  var vals = keys.map(function(k){ return HISTORICO[k].resumo.receita_esperada; });
-  var mrrVals = keys.map(function(k){ return HISTORICO[k].resumo.mrr_esperado; });
-  var setupVals = keys.map(function(k){ return HISTORICO[k].resumo.setup_esperado; });
-
-  var maxV = Math.max.apply(null, vals);
-  var minV = Math.min.apply(null, vals.concat(mrrVals)) * 0.85;
-  var pad = {t:10, b:28, l:10, r:10};
-  var chartW = W - pad.l - pad.r;
-  var chartH = H - pad.t - pad.b;
-
-  function xPos(i) { return pad.l + (keys.length < 2 ? chartW/2 : i * chartW / (keys.length-1)); }
-  function yPos(v) { return pad.t + chartH - ((v - minV) / (maxV - minV + 1)) * chartH; }
-
+  var ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, W, H);
 
-  // Grid lines
-  ctx.strokeStyle = 'rgba(75,85,255,0.06)';
-  ctx.lineWidth = 1;
-  [0.25, 0.5, 0.75, 1].forEach(function(p) {
-    var y = pad.t + chartH * (1-p);
-    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W-pad.r, y); ctx.stroke();
-  });
-
-  function drawLine(data, color, dashed) {
-    if (data.length < 2) return;
-    ctx.beginPath();
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 2;
-    if (dashed) ctx.setLineDash([4,3]); else ctx.setLineDash([]);
-    data.forEach(function(v, i) { i===0 ? ctx.moveTo(xPos(i), yPos(v)) : ctx.lineTo(xPos(i), yPos(v)); });
-    ctx.stroke();
-    ctx.setLineDash([]);
+  if (keys.length < 2) {
+    ctx.fillStyle = 'rgba(90,91,122,0.4)';
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Adicione mais snapshots para ver o gráfico', W/2, H/2);
+    return;
   }
 
-  drawLine(setupVals, 'rgba(75,85,255,0.25)', true);
-  drawLine(mrrVals, 'rgba(0,213,86,0.6)', false);
-  drawLine(vals, '#4b55ff', false);
+  var pad = {t:16, b:28, l:12, r:12};
+  var cW = W - pad.l - pad.r;
+  var cH = H - pad.t - pad.b;
+  var vals = keys.map(function(k){ return HISTORICO[k].resumo.receita_esperada; });
 
-  // Pontos e labels
+  var maxV = Math.max.apply(null, vals);
+  var minV = Math.min.apply(null, vals);
+  var range = maxV - minV || maxV * 0.1;
+  var lo = minV - range * 0.25;
+  var hi = maxV + range * 0.25;
+
+  function xPos(i) { return pad.l + i * cW / (keys.length - 1); }
+  function yPos(v) { return pad.t + cH - ((v - lo) / (hi - lo)) * cH; }
+
+  // Grid linhas horizontais sutis
+  ctx.strokeStyle = 'rgba(75,85,255,0.07)';
+  ctx.lineWidth = 1;
+  [0, 0.5, 1].forEach(function(p) {
+    var y = pad.t + cH * (1 - p);
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke();
+  });
+
+  // Área preenchida
+  ctx.beginPath();
+  ctx.moveTo(xPos(0), yPos(vals[0]));
+  vals.forEach(function(v, i) { if(i > 0) ctx.lineTo(xPos(i), yPos(v)); });
+  ctx.lineTo(xPos(keys.length-1), pad.t + cH);
+  ctx.lineTo(xPos(0), pad.t + cH);
+  ctx.closePath();
+  var grad = ctx.createLinearGradient(0, pad.t, 0, pad.t + cH);
+  grad.addColorStop(0, 'rgba(75,85,255,0.15)');
+  grad.addColorStop(1, 'rgba(75,85,255,0)');
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Linha principal
+  ctx.beginPath();
+  ctx.strokeStyle = '#4b55ff';
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
+  vals.forEach(function(v, i) { i===0 ? ctx.moveTo(xPos(i), yPos(v)) : ctx.lineTo(xPos(i), yPos(v)); });
+  ctx.stroke();
+
+  // Pontos, labels de valor e datas
   keys.forEach(function(k, i) {
     var v = vals[i];
     var x = xPos(i), y = yPos(v);
     var isActive = k === SNAP.data_snapshot;
+
+    // Ponto
     ctx.beginPath();
     ctx.arc(x, y, isActive ? 5 : 4, 0, Math.PI*2);
     ctx.fillStyle = isActive ? '#4b55ff' : 'white';
@@ -692,25 +641,16 @@ function drawHistChart(keys) {
     ctx.lineWidth = 2;
     ctx.fill(); ctx.stroke();
 
-    // Label data
-    ctx.fillStyle = 'rgba(90,91,122,0.8)';
-    ctx.font = '10px monospace';
+    // Valor acima do ponto
+    ctx.fillStyle = isActive ? '#4b55ff' : 'rgba(75,85,255,0.6)';
+    ctx.font = (isActive ? '600 ' : '') + '10px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText(k, x, H - 6);
-  });
+    ctx.fillText('R$ ' + Math.round(v).toLocaleString('pt-BR'), x, y - 10);
 
-  // Legenda
-  var legends = [{c:'#4b55ff',l:'Total'},{c:'rgba(0,213,86,0.8)',l:'MRR'},{c:'rgba(75,85,255,0.4)',l:'Setup',d:true}];
-  var lx = W - pad.r;
-  legends.slice().reverse().forEach(function(lg) {
-    ctx.font = '10px sans-serif';
-    var tw = ctx.measureText(lg.l).width;
-    lx -= tw + 20;
-    ctx.fillStyle = lg.c;
-    ctx.fillRect(lx, pad.t+2, 12, 3);
-    ctx.fillStyle = 'rgba(90,91,122,0.8)';
-    ctx.textAlign = 'left';
-    ctx.fillText(lg.l, lx+16, pad.t+7);
+    // Data abaixo
+    ctx.fillStyle = 'rgba(90,91,122,0.6)';
+    ctx.font = '10px monospace';
+    ctx.fillText(k, x, H - 6);
   });
 }
 
@@ -834,8 +774,8 @@ function init() {
 /* ── PIPELINE ── */
 function render() {
   var deals = DEALS.filter(function(d) {
-    if (F.etapa !== 'all' && d.etapa !== F.etapa) return false;
-    if (F.tipo  !== 'all' && d.tipo  !== F.tipo)  return false;
+    if (F.etapa.length > 0 && F.etapa.indexOf(d.etapa) < 0) return false;
+    if (F.tipo.length  > 0 && F.tipo.indexOf(d.tipo)   < 0) return false;
     if (F.search && d.vendedor.toLowerCase().indexOf(F.search) < 0) return false;
     return true;
   });
@@ -877,10 +817,9 @@ function render() {
 /* ── VENDEDORES ── */
 function renderVendedores() {
   var sorted = RANKING.slice().filter(function(r) {
-    if (VF.vtipo === 'all') return true;
-    // Identificar tipo pelo nome do vendedor nos deals
+    if (VF.vtipo.length === 0) return true;
     var vdeals = DEALS.filter(function(d){return d.vendedor === r.vendedor;});
-    return vdeals.some(function(d){return d.tipo === VF.vtipo;});
+    return vdeals.some(function(d){ return VF.vtipo.indexOf(d.tipo) >= 0; });
   }).sort(function(a,b) {
     var av = a[VF.vsort], bv = b[VF.vsort];
     return av < bv ? VSD : av > bv ? -VSD : 0;
@@ -1052,9 +991,28 @@ document.addEventListener('DOMContentLoaded', function() {
     btn.addEventListener('click', function() {
       var group = btn.getAttribute('data-group');
       var val   = btn.getAttribute('data-val');
-      F[group] = val;
-      document.querySelectorAll('.fbtn[data-group="'+group+'"]').forEach(function(b){b.classList.remove('on');});
-      btn.classList.add('on');
+      if (val === 'all') {
+        // Limpar seleção
+        F[group] = [];
+        document.querySelectorAll('.fbtn[data-group="'+group+'"]').forEach(function(b){b.classList.remove('on');});
+        btn.classList.add('on');
+      } else {
+        // Toggle multi-select
+        var idx = F[group].indexOf(val);
+        if (idx >= 0) {
+          F[group].splice(idx, 1);
+          btn.classList.remove('on');
+        } else {
+          F[group].push(val);
+          btn.classList.add('on');
+        }
+        // Desmarcar "Todas/Todos" se há seleção
+        var allBtn = document.querySelector('.fbtn[data-group="'+group+'"][data-val="all"]');
+        if (allBtn) {
+          if (F[group].length > 0) allBtn.classList.remove('on');
+          else allBtn.classList.add('on');
+        }
+      }
       render();
     });
   });
@@ -1069,13 +1027,29 @@ document.addEventListener('DOMContentLoaded', function() {
     btn.addEventListener('click', function() {
       var group = btn.getAttribute('data-vgroup');
       var val   = btn.getAttribute('data-vval');
-      VF[group] = val;
       if (group === 'vsort') {
+        // Sort é single-select
         VSD = (VF.vsort === val && VSD === -1) ? 1 : -1;
         VF.vsort = val;
+        document.querySelectorAll('[data-vgroup="vsort"]').forEach(function(b){b.classList.remove('on');});
+        btn.classList.add('on');
+      } else {
+        // Segmento é multi-select
+        if (val === 'all') {
+          VF[group] = [];
+          document.querySelectorAll('[data-vgroup="'+group+'"]').forEach(function(b){b.classList.remove('on');});
+          btn.classList.add('on');
+        } else {
+          var idx = VF[group].indexOf(val);
+          if (idx >= 0) { VF[group].splice(idx, 1); btn.classList.remove('on'); }
+          else { VF[group].push(val); btn.classList.add('on'); }
+          var allBtn = document.querySelector('[data-vgroup="'+group+'"][data-vval="all"]');
+          if (allBtn) {
+            if (VF[group].length > 0) allBtn.classList.remove('on');
+            else allBtn.classList.add('on');
+          }
+        }
       }
-      document.querySelectorAll('[data-vgroup="'+group+'"]').forEach(function(b){b.classList.remove('on');});
-      btn.classList.add('on');
       renderVendedores();
     });
   });
