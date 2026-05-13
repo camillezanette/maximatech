@@ -1,10 +1,10 @@
 {
   "data_snapshot": "2026-05-13",
   "resumo": {
-    "total_deals": 107,
-    "mrr_esperado": 160638.4,
-    "setup_esperado": 756608.78,
-    "receita_esperada": 884705.63,
+    "total_deals": 106,
+    "mrr_esperado": 135748.3,
+    "setup_esperado": 603908.78,
+    "receita_esperada": 732005.63,
     "meta_mrr": 73799.64,
     "meta_setup": 364286.18,
     "meta_total": 438085.82
@@ -1760,23 +1760,6 @@
       "data_entrada_etapa": "2026-05-12",
       "dias_na_etapa": 0.5,
       "data_fechamento_projetada": "2026-05-22"
-    },
-    {
-      "id": "60177617413",
-      "vendedor": "(Nenhum valor)",
-      "tipo": "Base",
-      "origem": "Outbound",
-      "etapa": "Confecção",
-      "probabilidade": 50.9,
-      "mrr": 48900.0,
-      "setup": 300000.0,
-      "total": 300000.0,
-      "mrr_esperado": 24890.1,
-      "setup_esperado": 152700.0,
-      "receita_esperada": 152700.0,
-      "data_entrada_etapa": "2026-05-12",
-      "dias_na_etapa": 0.5,
-      "data_fechamento_projetada": "2026-05-18"
     },
     {
       "id": "60182280069",
