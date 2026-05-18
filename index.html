@@ -232,6 +232,22 @@ tr:hover td{background:var(--bg);}
 .narrativa .pos{color:#006e3a;}
 .narrativa .neg{color:#9d0050;}
 .narrativa .neutro{color:var(--primary);}
+
+.aging-label{display:inline-flex;align-items:center;gap:4px;cursor:help;}
+.aging-tooltip{position:relative;display:inline-flex;}
+.aging-tooltip .tip{
+  display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
+  background:var(--dark);color:#fff;font-size:11px;line-height:1.6;padding:10px 12px;
+  border-radius:var(--r-md);width:220px;z-index:200;pointer-events:none;
+  box-shadow:0 4px 16px rgba(0,0,0,.15);
+}
+.aging-tooltip .tip::after{
+  content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  border:5px solid transparent;border-top-color:var(--dark);
+}
+.aging-tooltip:hover .tip{display:block;}
+.tip-row{display:flex;align-items:center;gap:6px;padding:2px 0;}
+.tip-sep{height:1px;background:rgba(255,255,255,.1);margin:6px 0;}
 </style>
 </head>
 <body>
@@ -365,32 +381,8 @@ tr:hover td{background:var(--bg);}
     <!-- ABA PIPELINE -->
     <div class="tab-pane" id="tab-pipeline">
 
-      <!-- Semana -->
-      <div style="margin-bottom:20px;">
-        <div class="semana-hdr">
-          <span class="semana-tag">⚡ Fechamentos próximos 7 dias</span>
-          <span class="semana-total" id="semana-total"></span>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr>
-              <th data-sort-s="vendedor">Vendedor</th>
-              <th data-sort-s="tipo">Segmento</th>
-              <th data-sort-s="etapa">Etapa</th>
-              <th data-sort-s="faixa_aging">Aging</th>
-              <th data-sort-s="probabilidade" class="tr">Prob.</th>
-              <th data-sort-s="dias_na_etapa" class="tr">Dias</th>
-              <th data-sort-s="receita_esperada" class="tr">Rec. esp.</th>
-              <th data-sort-s="data_fechamento_projetada">Fecha proj.</th>
-              <th>HS</th>
-            </tr></thead>
-            <tbody id="semana-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-
       <!-- Pipeline completo -->
-      <div class="section-title">Pipeline completo</div>
+      <div class="section-title">Pipeline</div>
       <div class="filters">
         <span class="fl">Etapa</span>
         <button class="fbtn on" data-group="etapa" data-val="all">Todas</button>
@@ -404,11 +396,21 @@ tr:hover td{background:var(--bg);}
         <button class="fbtn" data-group="tipo" data-val="Base">Base</button>
         <button class="fbtn" data-group="tipo" data-val="Novos">Novos</button>
         <div class="fsep"></div>
-        <span class="fl">Aging</span>
+        <div class="aging-tooltip">
+        <span class="fl aging-label">Aging <span style="font-size:10px;opacity:.5;">ⓘ</span></span>
+        <div class="tip">
+          <div style="font-weight:600;margin-bottom:6px;">Tempo na etapa vs ciclo esperado</div>
+          <div class="tip-row"><span>🟢</span><span>Normal — dentro do prazo</span></div>
+          <div class="tip-row"><span>🟡</span><span>Atenção — 1,5× mais lento (−30% na prob.)</span></div>
+          <div class="tip-row"><span>🔴</span><span>Velho — 3× mais lento (−60% na prob.)</span></div>
+        </div>
+      </div>
         <button class="fbtn on" data-group="aging" data-val="all">Todos</button>
         <button class="fbtn" data-group="aging" data-val="normal">🟢</button>
         <button class="fbtn" data-group="aging" data-val="amarelo">🟡</button>
         <button class="fbtn" data-group="aging" data-val="vermelho">🔴</button>
+        <div class="fsep"></div>
+        <button class="fbtn" data-group="periodo" data-val="semana" id="btn-semana">⚡ Próx. 7 dias</button>
         <div class="fsep"></div>
         <input class="fsearch" type="text" id="fsearch" placeholder="Buscar vendedor..."/>
         <span class="fcount" id="fcount"></span>
@@ -420,7 +422,19 @@ tr:hover td{background:var(--bg);}
             <th data-sort="tipo">Seg.</th>
             <th data-sort="origem">Origem</th>
             <th data-sort="etapa">Etapa</th>
-            <th data-sort="faixa_aging">Aging</th>
+            <th data-sort="faixa_aging">
+  <div class="aging-tooltip">
+    <span class="aging-label">Aging <span style="font-size:10px;opacity:.6;">ⓘ</span></span>
+    <div class="tip">
+      <div style="font-weight:600;margin-bottom:6px;">Tempo na etapa vs ciclo esperado</div>
+      <div class="tip-row"><span>🟢</span><span>Normal — dentro do prazo</span></div>
+      <div class="tip-row"><span>🟡</span><span>Atenção — 1,5× mais lento (−30% na prob.)</span></div>
+      <div class="tip-row"><span>🔴</span><span>Velho — 3× mais lento (−60% na prob.)</span></div>
+      <div class="tip-sep"></div>
+      <div style="opacity:.65;font-size:10px;">Ex: Proposta tem ciclo de 4,5d. Deal com 15d → 🔴</div>
+    </div>
+  </div>
+</th>
             <th data-sort="probabilidade" class="tr">Prob.</th>
             <th data-sort="mrr" class="tr">MRR</th>
             <th data-sort="setup" class="tr">Setup</th>
@@ -465,7 +479,7 @@ function cor(n){if(!corMap[n])corMap[n]=CORES[Object.keys(corMap).length%CORES.l
 function ini(n){return n.split(' ').filter(function(p){return p.length>1;}).slice(0,2).map(function(p){return p[0];}).join('').toUpperCase();}
 function abrev(n){var p=n.split(' ');return p[0]+' '+p[p.length-1];}
 
-var F={etapa:[],tipo:[],aging:[],search:''};
+var F={etapa:[],tipo:[],aging:[],periodo:'all',search:''};
 var SK='receita_esperada',SD=-1;
 var SS='receita_esperada',SSD=-1;
 var VF={vtipo:[],vsort:'pct'};
@@ -542,7 +556,6 @@ function init(){
   renderRanking();
   renderHistorico();
   renderPipeline();
-  renderSemana();
   renderVendedores();
 }
 
@@ -838,27 +851,18 @@ function loadSnap(key){
 }
 
 // ── SEMANA ──
-function renderSemana(){
-  var hoje='2026-05-18';
-  var fim=new Date(hoje);fim.setDate(fim.getDate()+7);
-  var limStr=fim.toISOString().slice(0,10);
-  var deals=DEALS.filter(function(d){return d.data_fechamento_projetada>=hoje&&d.data_fechamento_projetada<=limStr;})
-    .sort(function(a,b){return b.receita_esperada-a.receita_esperada;});
-  var tot=deals.reduce(function(s,d){return s+d.receita_esperada;},0);
-  var el=document.getElementById('semana-total');
-  if(el)el.textContent=deals.length+' deals · '+R(tot);
-  var tbody=document.getElementById('semana-tbody');
-  if(!tbody)return;
-  if(!deals.length){tbody.innerHTML='<tr><td colspan="9" class="no-rows">Nenhum fechamento nos próximos 7 dias.</td></tr>';return;}
-  tbody.innerHTML=deals.map(function(d){return buildRow(d,true);}).join('');
-}
+
 
 // ── PIPELINE ──
 function renderPipeline(){
+  var hojeStr='2026-05-18';
+  var fim7=new Date(hojeStr);fim7.setDate(fim7.getDate()+7);
+  var fim7str=fim7.toISOString().slice(0,10);
   var deals=DEALS.filter(function(d){
     if(F.etapa.length>0&&F.etapa.indexOf(d.etapa)<0)return false;
     if(F.tipo.length>0&&F.tipo.indexOf(d.tipo)<0)return false;
     if(F.aging.length>0&&F.aging.indexOf(d.faixa_aging)<0)return false;
+    if(F.periodo==='semana'&&(d.data_fechamento_projetada<hojeStr||d.data_fechamento_projetada>fim7str))return false;
     if(F.search&&d.vendedor.toLowerCase().indexOf(F.search)<0)return false;
     return true;
   }).sort(function(a,b){var av=a[SK],bv=b[SK];if(typeof av==='string'){av=av.toLowerCase();bv=bv.toLowerCase();}return av<bv?SD:av>bv?-SD:0;});
@@ -997,6 +1001,16 @@ document.addEventListener('DOMContentLoaded',function(){
   });
 
   // Filtros pipeline
+  // Botão período (toggle simples)
+  var btnSem = document.getElementById('btn-semana');
+  if(btnSem){
+    btnSem.addEventListener('click', function(){
+      if(F.periodo==='semana'){F.periodo='all';btnSem.classList.remove('on');}
+      else{F.periodo='semana';btnSem.classList.add('on');}
+      renderPipeline();
+    });
+  }
+
   document.querySelectorAll('.fbtn[data-group]').forEach(function(btn){
     btn.addEventListener('click',function(){
       var g=btn.getAttribute('data-group');var v=btn.getAttribute('data-val');
