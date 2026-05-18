@@ -529,42 +529,32 @@ var VSD = -1;
 var selectedVendedor = null;
 var VDK = 'receita_esperada', VDSD = -1;
 
-function login() {
-  if (document.getElementById('pwd').value === 'maxima2026') {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    init();
-  } else {
-    document.getElementById('err').style.display = 'block';
-    document.getElementById('pwd').value = '';
-    document.getElementById('pwd').focus();
-  }
-}
+
 
 
   // Metas por segmento — maio 2026
-  var META_BASE  = {mrr:30367.80, setup:156166.50, total:186534.30};
-  var META_NOVOS = {mrr:43431.84, setup:208119.68, total:251551.52};
+var META_BASE  = {mrr:30367.80, setup:156166.50, total:186534.30};
+var META_NOVOS = {mrr:43431.84, setup:208119.68, total:251551.52};
 
-  function setSegCard(prefix, proj, meta, color) {
-    var pTotal = proj.total/meta.total*100;
-    var pMrr   = proj.mrr/meta.mrr*100;
-    var pSetup = proj.setup/meta.setup*100;
-    document.getElementById(prefix+'-meta-total').textContent = R(meta.total);
-    document.getElementById(prefix+'-meta-mrr').textContent   = R(meta.mrr);
-    document.getElementById(prefix+'-meta-setup').textContent = R(meta.setup);
-    document.getElementById(prefix+'-pct-total').textContent  = PCT(pTotal);
-    document.getElementById(prefix+'-pct-mrr').textContent    = PCT(pMrr);
-    document.getElementById(prefix+'-pct-setup').textContent  = PCT(pSetup);
-    document.getElementById(prefix+'-bar-total').style.width  = Math.min(pTotal,100)+'%';
-    document.getElementById(prefix+'-bar-mrr').style.width    = Math.min(pMrr,100)+'%';
-    document.getElementById(prefix+'-bar-setup').style.width  = Math.min(pSetup,100)+'%';
-    var pcts = [pTotal, pMrr, pSetup];
-    var ids  = [prefix+'-pct-total', prefix+'-pct-mrr', prefix+'-pct-setup'];
-    ids.forEach(function(id, i) {
-      var el = document.getElementById(id);
-      el.style.color = pcts[i]>=100?'#006e3a':pcts[i]>=70?'#92400e':'#9d0050';
-    });
+function setSegCard(prefix, proj, meta, color) {
+  var pTotal = proj.total/meta.total*100;
+  var pMrr   = proj.mrr/meta.mrr*100;
+  var pSetup = proj.setup/meta.setup*100;
+  document.getElementById(prefix+'-meta-total').textContent = R(meta.total);
+  document.getElementById(prefix+'-meta-mrr').textContent   = R(meta.mrr);
+  document.getElementById(prefix+'-meta-setup').textContent = R(meta.setup);
+  document.getElementById(prefix+'-pct-total').textContent  = PCT(pTotal);
+  document.getElementById(prefix+'-pct-mrr').textContent    = PCT(pMrr);
+  document.getElementById(prefix+'-pct-setup').textContent  = PCT(pSetup);
+  document.getElementById(prefix+'-bar-total').style.width  = Math.min(pTotal,100)+'%';
+  document.getElementById(prefix+'-bar-mrr').style.width    = Math.min(pMrr,100)+'%';
+  document.getElementById(prefix+'-bar-setup').style.width  = Math.min(pSetup,100)+'%';
+  var pcts = [pTotal, pMrr, pSetup];
+  var ids  = [prefix+'-pct-total', prefix+'-pct-mrr', prefix+'-pct-setup'];
+  ids.forEach(function(id, i) {
+    var el = document.getElementById(id);
+    el.style.color = pcts[i]>=100?'#006e3a':pcts[i]>=70?'#92400e':'#9d0050';
+  });
   }
 
 
@@ -578,18 +568,18 @@ function renderHistorico() {
 
   // Montar pontos do snap
   snapsEl.innerHTML = keys.map(function(k, i) {
-    var r = HISTORICO[k].resumo;
-    var prev = i > 0 ? HISTORICO[keys[i-1]].resumo : null;
-    var delta = prev ? r.receita_esperada - prev.receita_esperada : null;
-    var isLast = k === SNAP.data_snapshot;
-    var dHtml = delta !== null
-      ? '<div class="hist-snap-delta '+(delta>=0?'delta-up':'delta-down')+'">'+(delta>=0?'↑':'↓')+' R$ '+Math.abs(Math.round(delta)).toLocaleString('pt-BR')+'</div>'
-      : '<div class="hist-snap-delta" style="color:var(--text-soft)">snapshot inicial</div>';
-    return '<div class="hist-snap'+(isLast?' active':'')+'" data-key="'+k+'" style="cursor:pointer">'
-      + '<div class="hist-snap-dot"></div>'
-      + '<div class="hist-snap-date">'+k+'</div>'
-      + '<div class="hist-snap-val">R$ '+Math.round(r.receita_esperada).toLocaleString('pt-BR')+'</div>'
-      + dHtml + '</div>';
+  var r = HISTORICO[k].resumo;
+  var prev = i > 0 ? HISTORICO[keys[i-1]].resumo : null;
+  var delta = prev ? r.receita_esperada - prev.receita_esperada : null;
+  var isLast = k === SNAP.data_snapshot;
+  var dHtml = delta !== null
+    ? '<div class="hist-snap-delta '+(delta>=0?'delta-up':'delta-down')+'">'+(delta>=0?'↑':'↓')+' R$ '+Math.abs(Math.round(delta)).toLocaleString('pt-BR')+'</div>'
+    : '<div class="hist-snap-delta" style="color:var(--text-soft)">snapshot inicial</div>';
+  return '<div class="hist-snap'+(isLast?' active':'')+'" data-key="'+k+'" style="cursor:pointer">'
+    + '<div class="hist-snap-dot"></div>'
+    + '<div class="hist-snap-date">'+k+'</div>'
+    + '<div class="hist-snap-val">R$ '+Math.round(r.receita_esperada).toLocaleString('pt-BR')+'</div>'
+    + dHtml + '</div>';
   }).join('');
 
   // Gráfico de linha
@@ -609,11 +599,11 @@ function drawHistChart(keys) {
   ctx.clearRect(0, 0, W, H);
 
   if (keys.length < 2) {
-    ctx.fillStyle = 'rgba(90,91,122,0.4)';
-    ctx.font = '12px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Adicione mais snapshots para ver o gráfico', W/2, H/2);
-    return;
+  ctx.fillStyle = 'rgba(90,91,122,0.4)';
+  ctx.font = '12px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Adicione mais snapshots para ver o gráfico', W/2, H/2);
+  return;
   }
 
   var pad = {t:16, b:28, l:12, r:12};
@@ -627,15 +617,15 @@ function drawHistChart(keys) {
   var lo = minV - range * 0.25;
   var hi = maxV + range * 0.25;
 
-  function xPos(i) { return pad.l + i * cW / (keys.length - 1); }
-  function yPos(v) { return pad.t + cH - ((v - lo) / (hi - lo)) * cH; }
+function xPos(i) { return pad.l + i * cW / (keys.length - 1); }
+function yPos(v) { return pad.t + cH - ((v - lo) / (hi - lo)) * cH; }
 
   // Grid linhas horizontais sutis
   ctx.strokeStyle = 'rgba(75,85,255,0.07)';
   ctx.lineWidth = 1;
   [0, 0.5, 1].forEach(function(p) {
-    var y = pad.t + cH * (1 - p);
-    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke();
+  var y = pad.t + cH * (1 - p);
+  ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke();
   });
 
   // Área preenchida
@@ -661,43 +651,43 @@ function drawHistChart(keys) {
 
   // Pontos, labels de valor e datas
   keys.forEach(function(k, i) {
-    var v = vals[i];
-    var x = xPos(i), y = yPos(v);
-    var isActive = k === SNAP.data_snapshot;
+  var v = vals[i];
+  var x = xPos(i), y = yPos(v);
+  var isActive = k === SNAP.data_snapshot;
 
-    // Ponto
-    ctx.beginPath();
-    ctx.arc(x, y, isActive ? 5 : 4, 0, Math.PI*2);
-    ctx.fillStyle = isActive ? '#4b55ff' : 'white';
-    ctx.strokeStyle = '#4b55ff';
-    ctx.lineWidth = 2;
-    ctx.fill(); ctx.stroke();
+  // Ponto
+  ctx.beginPath();
+  ctx.arc(x, y, isActive ? 5 : 4, 0, Math.PI*2);
+  ctx.fillStyle = isActive ? '#4b55ff' : 'white';
+  ctx.strokeStyle = '#4b55ff';
+  ctx.lineWidth = 2;
+  ctx.fill(); ctx.stroke();
 
-    // Valor acima do ponto
-    ctx.fillStyle = isActive ? '#4b55ff' : 'rgba(75,85,255,0.6)';
-    ctx.font = (isActive ? '600 ' : '') + '10px monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText('R$ ' + Math.round(v).toLocaleString('pt-BR'), x, y - 10);
+  // Valor acima do ponto
+  ctx.fillStyle = isActive ? '#4b55ff' : 'rgba(75,85,255,0.6)';
+  ctx.font = (isActive ? '600 ' : '') + '10px monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('R$ ' + Math.round(v).toLocaleString('pt-BR'), x, y - 10);
 
-    // Data abaixo
-    ctx.fillStyle = 'rgba(90,91,122,0.6)';
-    ctx.font = '10px monospace';
-    ctx.fillText(k, x, H - 6);
+  // Data abaixo
+  ctx.fillStyle = 'rgba(90,91,122,0.6)';
+  ctx.font = '10px monospace';
+  ctx.fillText(k, x, H - 6);
   });
 }
 
 function renderDiff(keys) {
   var diffEl = document.getElementById('hist-diff-list');
   if (!diffEl || keys.length < 2) {
-    if (diffEl) diffEl.innerHTML = '<div style="color:var(--text-soft);font-size:12px;padding:4px 0">Adicione mais snapshots para ver comparações.</div>';
-    return;
+  if (diffEl) diffEl.innerHTML = '<div style="color:var(--text-soft);font-size:12px;padding:4px 0">Adicione mais snapshots para ver comparações.</div>';
+  return;
   }
 
   var curKey = SNAP.data_snapshot;
   var curIdx = keys.indexOf(curKey);
   if (curIdx <= 0) {
-    diffEl.innerHTML = '<div style="color:var(--text-soft);font-size:12px;padding:4px 0">Este é o primeiro snapshot — sem comparação disponível.</div>';
-    return;
+  diffEl.innerHTML = '<div style="color:var(--text-soft);font-size:12px;padding:4px 0">Este é o primeiro snapshot — sem comparação disponível.</div>';
+  return;
   }
 
   var prevKey = keys[curIdx - 1];
@@ -709,15 +699,15 @@ function renderDiff(keys) {
   // Deals
   var deltaDeals = cur.resumo.total_deals - prev.resumo.total_deals;
   if (deltaDeals !== 0) {
-    var ids_cur = cur.deals.map(function(d){return d.id;});
-    var ids_prev = prev.deals.map(function(d){return d.id;});
-    var novos = ids_cur.filter(function(id){ return ids_prev.indexOf(id) < 0; });
-    var map_cur = {};
-    cur.deals.forEach(function(d){ map_cur[d.id]=d; });
-    novos.forEach(function(id) {
-      var d = map_cur[id];
-      items.push({icon:'new', label:'Novo deal — '+d.vendedor.split(' ')[0]+' ('+d.etapa+')', badge: 'R$ '+Math.round(d.total).toLocaleString('pt-BR'), color:'#006e3a'});
-    });
+  var ids_cur = cur.deals.map(function(d){return d.id;});
+  var ids_prev = prev.deals.map(function(d){return d.id;});
+  var novos = ids_cur.filter(function(id){ return ids_prev.indexOf(id) < 0; });
+  var map_cur = {};
+  cur.deals.forEach(function(d){ map_cur[d.id]=d; });
+  novos.forEach(function(id) {
+    var d = map_cur[id];
+    items.push({icon:'new', label:'Novo deal — '+d.vendedor.split(' ')[0]+' ('+d.etapa+')', badge: 'R$ '+Math.round(d.total).toLocaleString('pt-BR'), color:'#006e3a'});
+  });
   }
 
   // Receita
@@ -730,19 +720,19 @@ function renderDiff(keys) {
   var rk_cur = {}; cur.ranking.forEach(function(r){ rk_cur[r.vendedor]=r; });
   var rk_prev = {}; prev.ranking.forEach(function(r){ rk_prev[r.vendedor]=r; });
   Object.keys(rk_cur).forEach(function(v) {
-    var rc = rk_cur[v], rp = rk_prev[v];
-    if (rp && Math.abs(rc.pct - rp.pct) > 0.5) {
-      var dp = rc.pct - rp.pct;
-      items.push({icon:'up', label: v.split(' ')[0]+' '+v.split(' ').pop()+': '+rp.pct.toFixed(1)+'% → '+rc.pct.toFixed(1)+'%', badge:(dp>=0?'+':'')+dp.toFixed(1)+'pp', color: dp>=0?'#3941c8':'#ff008d'});
-    }
+  var rc = rk_cur[v], rp = rk_prev[v];
+  if (rp && Math.abs(rc.pct - rp.pct) > 0.5) {
+    var dp = rc.pct - rp.pct;
+    items.push({icon:'up', label: v.split(' ')[0]+' '+v.split(' ').pop()+': '+rp.pct.toFixed(1)+'% → '+rc.pct.toFixed(1)+'%', badge:(dp>=0?'+':'')+dp.toFixed(1)+'pp', color: dp>=0?'#3941c8':'#ff008d'});
+  }
   });
 
   diffEl.innerHTML = items.map(function(it) {
-    return '<div class="hist-diff-item">'
-      + '<div class="diff-icon '+(it.icon==='new'?'diff-icon-new':'diff-icon-up')+'">'+(it.icon==='new'?'★':'↑')+'</div>'
-      + '<span>'+it.label+'</span>'
-      + '<span class="diff-badge" style="color:'+it.color+'">'+it.badge+'</span>'
-      + '</div>';
+  return '<div class="hist-diff-item">'
+    + '<div class="diff-icon '+(it.icon==='new'?'diff-icon-new':'diff-icon-up')+'">'+(it.icon==='new'?'★':'↑')+'</div>'
+    + '<span>'+it.label+'</span>'
+    + '<span class="diff-badge" style="color:'+it.color+'">'+it.badge+'</span>'
+    + '</div>';
   }).join('');
 }
 
@@ -755,6 +745,17 @@ function loadSnap(key) {
   init();
 }
 
+function login() {
+  if (document.getElementById('pwd').value === 'maxima2026') {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    init();
+  } else {
+    document.getElementById('err').style.display = 'block';
+    document.getElementById('pwd').value = '';
+    document.getElementById('pwd').focus();
+  }
+}
 function init() {
   var r = SNAP.resumo;
   document.getElementById('tdate').textContent = SNAP.data_snapshot;
@@ -880,7 +881,7 @@ function render() {
       var agingClass = d.faixa_aging==='vermelho'?'badge-vermelho':d.faixa_aging==='amarelo'?'badge-amarelo':'badge-normal';
     var agingLabel = d.faixa_aging==='vermelho'?'🔴 velho':d.faixa_aging==='amarelo'?'🟡 atenção':'🟢 ok';
     var probBase = d.probabilidade_base ? ' (base: '+d.probabilidade_base+'%)' : '';
-+ '<td class="tr"><span class="prob '+pb+'">+d.probabilidade+'%</span></td>'
++ '<td class="tr"><span class="prob '+pb+'">'+d.probabilidade+'%</span></td>'
       + '<td class="tr mono">'+R(d.mrr)+'</td>'
       + '<td class="tr mono">'+R(d.setup)+'</td>'
       + '<td class="tr mono">'+R(d.total)+'</td>'
@@ -975,7 +976,7 @@ function renderVendedorDeals(nome) {
       var agingClass = d.faixa_aging==='vermelho'?'badge-vermelho':d.faixa_aging==='amarelo'?'badge-amarelo':'badge-normal';
     var agingLabel = d.faixa_aging==='vermelho'?'🔴 velho':d.faixa_aging==='amarelo'?'🟡 atenção':'🟢 ok';
     var probBase = d.probabilidade_base ? ' (base: '+d.probabilidade_base+'%)' : '';
-+ '<td class="tr"><span class="prob '+pb+'">+d.probabilidade+'%</span></td>'
++ '<td class="tr"><span class="prob '+pb+'">'+d.probabilidade+'%</span></td>'
       + '<td class="tr mono">'+R(d.mrr)+'</td>'
       + '<td class="tr mono">'+R(d.setup)+'</td>'
       + '<td class="tr mono">'+R(d.total)+'</td>'
