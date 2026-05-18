@@ -248,6 +248,27 @@ tr:hover td{background:var(--bg);}
 .aging-tooltip:hover .tip{display:block;}
 .tip-row{display:flex;align-items:center;gap:6px;padding:2px 0;}
 .tip-sep{height:1px;background:rgba(255,255,255,.1);margin:6px 0;}
+
+.seg-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.seg-block{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;}
+.seg-block-base{border-top:3px solid var(--green);}
+.seg-block-novos{border-top:3px solid var(--primary);}
+.seg-block-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.seg-block-tag{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:3px 10px;border-radius:20px;}
+.seg-tag-base{background:rgba(0,213,86,.12);color:#006e3a;}
+.seg-tag-novos{background:var(--primary-dim);color:var(--primary);}
+.seg-block-pct{font-size:18px;font-weight:700;font-family:var(--mono);}
+.seg-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.seg-metric{background:var(--bg);border-radius:8px;padding:9px 10px;}
+.seg-metric-label{font-size:9px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-soft);margin-bottom:4px;}
+.seg-metric-val{font-size:14px;font-weight:600;color:var(--text);font-family:var(--mono);margin-bottom:3px;}
+.seg-metric-meta{font-size:10px;color:var(--text-soft);margin-bottom:5px;}
+.seg-gap-card .seg-metric-val{font-size:15px;}
+
+.callout{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-radius:var(--r-md);margin-top:10px;font-size:12px;line-height:1.6;}
+.callout-info{background:#E6F1FB;border-left:3px solid #378ADD;color:#0C447C;}
+.callout-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.callout strong{font-weight:600;}
 </style>
 </head>
 <body>
@@ -284,45 +305,126 @@ tr:hover td{background:var(--bg);}
     <!-- ABA RESUMO -->
     <div class="tab-pane active" id="tab-resumo">
 
-      <!-- Hero -->
-      <div class="exec-hero" id="exec-hero">
+      <!-- 1. HERO -->
+      <div class="exec-hero">
         <div class="exec-main">
-          <div class="exec-label">Receita projetada — maio 2026</div>
+          <div class="exec-label">Forecast maio 2026</div>
           <div class="exec-value" id="exec-value"></div>
           <div class="exec-meta" id="exec-meta"></div>
         </div>
         <div class="exec-right">
-          <div class="semaforo" id="semaforo"></div>
+          <div id="semaforo"></div>
         </div>
       </div>
 
-      <!-- Barras meta -->
-      <div class="exec-bars">
+      <!-- 2. MRR e SETUP -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
         <div class="ebar">
-          <div class="ebar-label">Receita total</div>
-          <div class="ebar-top"><span class="ebar-val" id="eb-tot-v"></span><span class="ebar-pct" id="eb-tot-p"></span></div>
-          <div class="ebar-meta" id="eb-tot-g"></div>
-          <div class="prog"><div class="prog-fill" id="eb-tot-b"></div></div>
-        </div>
-        <div class="ebar">
-          <div class="ebar-label">MRR</div>
+          <div class="ebar-label">MRR esperado</div>
           <div class="ebar-top"><span class="ebar-val" id="eb-mrr-v"></span><span class="ebar-pct" id="eb-mrr-p"></span></div>
           <div class="ebar-meta" id="eb-mrr-g"></div>
           <div class="prog"><div class="prog-fill" id="eb-mrr-b"></div></div>
         </div>
         <div class="ebar">
-          <div class="ebar-label">Setup</div>
+          <div class="ebar-label">Setup esperado</div>
           <div class="ebar-top"><span class="ebar-val" id="eb-set-v"></span><span class="ebar-pct" id="eb-set-p"></span></div>
           <div class="ebar-meta" id="eb-set-g"></div>
           <div class="prog"><div class="prog-fill" id="eb-set-b"></div></div>
         </div>
       </div>
 
-      <!-- Ranking executivo -->
-      <div class="section-title">Time comercial</div>
-      <div class="rank-grid" id="rank-grid"></div>
+      <!-- 3. BASE e NOVOS -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
 
-      <!-- Histórico -->
+        <div class="seg-block seg-block-base">
+          <div class="seg-block-title">
+            <span class="seg-block-tag seg-tag-base">Base</span>
+            <span class="seg-block-pct" id="seg-base-pct"></span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+            <div class="seg-metric">
+              <div class="seg-metric-label">Receita</div>
+              <div class="seg-metric-val" id="seg-base-tot"></div>
+              <div class="seg-metric-meta">meta <span id="seg-base-meta-tot"></span></div>
+              <div class="prog"><div class="prog-fill" id="seg-base-bar-tot"></div></div>
+            </div>
+            <div class="seg-metric">
+              <div class="seg-metric-label">MRR</div>
+              <div class="seg-metric-val" id="seg-base-mrr"></div>
+              <div class="seg-metric-meta">meta <span id="seg-base-meta-mrr"></span></div>
+              <div class="prog"><div class="prog-fill" id="seg-base-bar-mrr"></div></div>
+            </div>
+            <div class="seg-metric">
+              <div class="seg-metric-label">Setup</div>
+              <div class="seg-metric-val" id="seg-base-set"></div>
+              <div class="seg-metric-meta">meta <span id="seg-base-meta-set"></span></div>
+              <div class="prog"><div class="prog-fill" id="seg-base-bar-set"></div></div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+            <div style="font-size:11px;color:var(--text-soft);">
+              <span style="font-weight:600;color:var(--text);" id="seg-base-clientes"></span>
+              <span> clientes · meta 30</span>
+            </div>
+            <div style="font-size:11px;font-weight:600;" id="seg-base-gap"></div>
+          </div>
+        </div>
+
+        <div class="seg-block seg-block-novos">
+          <div class="seg-block-title">
+            <span class="seg-block-tag seg-tag-novos">Nova empresa</span>
+            <span class="seg-block-pct" id="seg-novos-pct"></span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+            <div class="seg-metric">
+              <div class="seg-metric-label">Receita</div>
+              <div class="seg-metric-val" id="seg-novos-tot"></div>
+              <div class="seg-metric-meta">meta <span id="seg-novos-meta-tot"></span></div>
+              <div class="prog"><div class="prog-fill" id="seg-novos-bar-tot"></div></div>
+            </div>
+            <div class="seg-metric">
+              <div class="seg-metric-label">MRR</div>
+              <div class="seg-metric-val" id="seg-novos-mrr"></div>
+              <div class="seg-metric-meta">meta <span id="seg-novos-meta-mrr"></span></div>
+              <div class="prog"><div class="prog-fill" id="seg-novos-bar-mrr"></div></div>
+            </div>
+            <div class="seg-metric">
+              <div class="seg-metric-label">Setup</div>
+              <div class="seg-metric-val" id="seg-novos-set"></div>
+              <div class="seg-metric-meta">meta <span id="seg-novos-meta-set"></span></div>
+              <div class="prog"><div class="prog-fill" id="seg-novos-bar-set"></div></div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+            <div style="font-size:11px;color:var(--text-soft);">
+              <span style="font-weight:600;color:var(--text);" id="seg-novos-clientes"></span>
+              <span> clientes · meta 16</span>
+            </div>
+            <div style="font-size:11px;font-weight:600;" id="seg-novos-gap"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 4. RANKING -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+        <div>
+          <div class="section-title" style="margin-bottom:10px;">Base</div>
+          <div id="rank-grid-base" style="display:flex;flex-direction:column;gap:10px;"></div>
+        </div>
+        <div>
+          <div class="section-title" style="margin-bottom:10px;">Nova empresa</div>
+          <div id="rank-grid-novos" style="display:flex;flex-direction:column;gap:10px;"></div>
+        </div>
+      </div>
+
+      <!-- Callout meta -->
+      <div class="callout callout-info" style="margin-bottom:20px;">
+        <div class="callout-icon">ℹ️</div>
+        <div><strong>Meta da área vs. metas individuais:</strong> as metas individuais somam mais que a meta da área — isso é intencional. A meta da área é o compromisso mínimo coletivo; as individuais são mais agressivas para criar margem.</div>
+      </div>
+
+      <!-- 5. EVOLUÇÃO SEMANAL -->
       <div class="section-title">Evolução semanal</div>
       <div class="hist-box">
         <div class="hist-snaps" id="hist-snaps"></div>
@@ -333,13 +435,16 @@ tr:hover td{background:var(--bg);}
             <div class="modelo-txt" id="modelo-update-txt"></div>
           </div>
           <div class="narrativa" id="narrativa" style="display:none;"></div>
-          <div class="diff-title">O que mudou</div>
           <div class="diff-list" id="hist-diff"></div>
         </div>
       </div>
 
-      <!-- Metodologia -->
-      <div class="metodo-box">
+    </div>
+
+    <div class="tab-pane" id="tab-pipeline">
+
+      <!-- Metodologia (para RevOps) -->
+      <div class="metodo-box" style="margin-bottom:20px;">
         <div class="metodo-hdr" onclick="toggleMetodo()">
           <div class="metodo-hdr-left">
             <div class="metodo-icon">📐</div>
@@ -357,7 +462,7 @@ tr:hover td{background:var(--bg);}
           </div>
           <div class="mc"><div class="mc-num">01 · ETAPAS</div><div class="mc-title">Quais negócios entram</div><div class="mc-desc">Apenas deals nas etapas <strong>Demonstração → Xeque-Mate</strong>. Prospecção e Pesquisa excluídas.</div></div>
           <div class="mc"><div class="mc-num">02 · CICLO</div><div class="mc-title">Tempo até o fechamento</div><div class="mc-desc">Mediana histórica jan–mai/26 por etapa e segmento. Base: 8–9d. Nova empresa: 10–11d.</div></div>
-          <div class="mc"><div class="mc-num">03 · TAXA</div><div class="mc-title">Probabilidade de fechar</div><div class="mc-desc">Taxa histórica real por etapa e segmento, com <strong>decaimento por envelhecimento</strong>: −30% após 1,5x o ciclo, −60% após 3x.</div></div>
+          <div class="mc"><div class="mc-num">03 · TAXA</div><div class="mc-title">Probabilidade de fechar</div><div class="mc-desc">Taxa histórica real com <strong>decaimento por envelhecimento</strong>: −30% após 1,5× o ciclo, −60% após 3×.</div></div>
           <div class="metodo-tbl">
             <table>
               <thead><tr><th>Etapa</th><th>Taxa Base</th><th>Taxa Novos</th><th>Ciclo Base</th><th>Ciclo Novos</th></tr></thead>
@@ -369,17 +474,11 @@ tr:hover td{background:var(--bg);}
               </tbody>
             </table>
           </div>
-          <div class="mc"><div class="mc-num">04 · AGING</div><div class="mc-title">Decaimento por envelhecimento</div><div class="mc-desc">🟢 Normal (até 1,5x ciclo) · 🟡 Atenção (1,5x–3x, −30%) · 🔴 Velho (>3x, −60%)</div></div>
+          <div class="mc"><div class="mc-num">04 · AGING</div><div class="mc-title">Decaimento por envelhecimento</div><div class="mc-desc">🟢 Normal (até 1,5×) · 🟡 Atenção (1,5×–3×, −30%) · 🔴 Velho (>3×, −60%)</div></div>
           <div class="mc"><div class="mc-num">05 · VALOR</div><div class="mc-title">MRR e Setup</div><div class="mc-desc">Valor real do deal quando disponível. Fallback: R$ 10.846 (base) e R$ 14.311 (novos).</div></div>
-          <div class="mc"><div class="mc-num">06 · CALIBRAÇÃO</div><div class="mc-title">Histórico</div><div class="mc-desc">Parâmetros calibrados com dados reais de jan–mai/26 (46+ deals ganhos). Atualizado semanalmente.</div></div>
-          <div class="metodo-note">⚠️ <strong>Limitações:</strong> ciclos de Confecção, Proposta e Xeque-Mate estimados por proporção do ciclo total. Recomenda-se revisão semanal do CRM.</div>
+          <div class="metodo-note">⚠️ Ciclos de Confecção, Proposta e Xeque-Mate estimados por proporção do ciclo total. Recomenda-se revisão semanal do CRM.</div>
         </div>
       </div>
-
-    </div>
-
-    <!-- ABA PIPELINE -->
-    <div class="tab-pane" id="tab-pipeline">
 
       <!-- Pipeline completo -->
       <div class="section-title">Pipeline</div>
@@ -528,31 +627,28 @@ function init(){
     +'<div class="sem-label sem-label-'+sc+'">'+label+'</div>'
     +'<div style="font-size:22px;font-weight:700;font-family:var(--mono);color:'+(sc==='verde'?'var(--green)':sc==='amarelo'?'var(--amber)':'var(--red)')+'">'+PCT(pct)+'</div>';
 
-  // Barras meta
-  [['tot',r.receita_esperada,r.meta_total],['mrr',r.mrr_esperado,r.meta_mrr],['set',r.setup_esperado,r.meta_setup]].forEach(function(x){
+  // Barras meta — só MRR e Setup (Receita Total está no hero)
+  [['mrr',r.mrr_esperado,r.meta_mrr],['set',r.setup_esperado,r.meta_setup]].forEach(function(x){
+    var el_v=document.getElementById('eb-'+x[0]+'-v');
+    var el_p=document.getElementById('eb-'+x[0]+'-p');
+    var el_g=document.getElementById('eb-'+x[0]+'-g');
+    var el_b=document.getElementById('eb-'+x[0]+'-b');
+    if(!el_v)return;
     var p=x[1]/x[2]*100;
-    document.getElementById('eb-'+x[0]+'-v').textContent=R(x[1]);
-    document.getElementById('eb-'+x[0]+'-p').textContent=PCT(p);
-    document.getElementById('eb-'+x[0]+'-p').style.color=pctColor(p);
-    document.getElementById('eb-'+x[0]+'-g').textContent='meta '+R(x[2]);
-    document.getElementById('eb-'+x[0]+'-b').style.width=Math.min(p,100)+'%';
-    document.getElementById('eb-'+x[0]+'-b').style.background=barColor(p);
+    el_v.textContent=R(x[1]);
+    el_p.textContent=PCT(p);
+    el_p.style.color=pctColor(p);
+    el_g.textContent='meta '+R(x[2]);
+    el_b.style.width=Math.min(p,100)+'%';
+    el_b.style.background=barColor(p);
   });
 
   // Cards segmento
   var base=DEALS.filter(function(d){return d.tipo==='Base';});
   var novos=DEALS.filter(function(d){return d.tipo==='Novos';});
-  setSegCard('c-base',
-    {total:base.reduce(function(a,d){return a+d.receita_esperada;},0),
-     mrr:base.reduce(function(a,d){return a+d.mrr_esperado;},0),
-     setup:base.reduce(function(a,d){return a+d.setup_esperado;},0),
-     deals:base.length},META_BASE);
-  setSegCard('c-novos',
-    {total:novos.reduce(function(a,d){return a+d.receita_esperada;},0),
-     mrr:novos.reduce(function(a,d){return a+d.mrr_esperado;},0),
-     setup:novos.reduce(function(a,d){return a+d.setup_esperado;},0),
-     deals:novos.length},META_NOVOS);
+  // segmentos populados via renderSegmentos()
 
+  renderSegmentos();
   renderRanking();
   renderHistorico();
   renderPipeline();
@@ -564,9 +660,62 @@ function setSegCard(prefix,proj,meta){
 }
 
 // ── RANKING EXECUTIVO ──
+
+function renderSegmentos(){
+  var base  = DEALS.filter(function(d){return d.tipo==='Base';});
+  var novos = DEALS.filter(function(d){return d.tipo==='Novos';});
+
+  function soma(arr, key){return arr.reduce(function(a,d){return a+d[key];},0);}
+
+  var projBase  = {tot:soma(base,'receita_esperada'), mrr:soma(base,'mrr_esperado'), set:soma(base,'setup_esperado')};
+  var projNovos = {tot:soma(novos,'receita_esperada'),mrr:soma(novos,'mrr_esperado'),set:soma(novos,'setup_esperado')};
+
+  var metaBase  = {tot:186534.30, mrr:30367.80, set:156166.50};
+  var metaNovos = {tot:251551.52, mrr:43431.84, set:208119.68};
+
+  function fillSeg(prefix, proj, meta, deals, color){
+    var pTot = proj.tot/meta.tot*100;
+    var pMrr = proj.mrr/meta.mrr*100;
+    var pSet = proj.set/meta.set*100;
+    var gap  = proj.tot - meta.tot;
+    var bc   = barColor(pTot);
+
+    function setEl(id, prop, val){ var el=document.getElementById(id); if(el) el[prop]=val; }
+    function setStyle(id, prop, val){ var el=document.getElementById(id); if(el) el.style[prop]=val; }
+    setEl(prefix+'-pct','textContent',PCT(pTot));
+    setStyle(prefix+'-pct','color',pctColor(pTot));
+    setEl(prefix+'-tot','textContent',R(proj.tot));
+    setEl(prefix+'-mrr','textContent',R(proj.mrr));
+    setEl(prefix+'-set','textContent',R(proj.set));
+    setEl(prefix+'-meta-tot','textContent',R(meta.tot));
+    setEl(prefix+'-meta-mrr','textContent',R(meta.mrr));
+    setEl(prefix+'-meta-set','textContent',R(meta.set));
+    setStyle(prefix+'-bar-tot','width',Math.min(pTot,100)+'%');
+    setStyle(prefix+'-bar-tot','background',bc);
+    setStyle(prefix+'-bar-mrr','width',Math.min(pMrr,100)+'%');
+    setStyle(prefix+'-bar-mrr','background',barColor(pMrr));
+    setStyle(prefix+'-bar-set','width',Math.min(pSet,100)+'%');
+    setStyle(prefix+'-bar-set','background',barColor(pSet));
+
+    var gapEl = document.getElementById(prefix+'-gap');
+    if(gapEl){ gapEl.textContent=(gap>=0?'+':'')+R(gap); gapEl.style.color=gap>=0?'var(--green)':'var(--red)'; }
+    var dealsEl = document.getElementById(prefix+'-deals');
+    if(dealsEl) dealsEl.textContent = deals+' deals';
+    var clientesEl = document.getElementById(prefix+'-clientes');
+    if(clientesEl) clientesEl.textContent = deals;
+  }
+
+  fillSeg('seg-base',  projBase,  metaBase,  base.length);
+  fillSeg('seg-novos', projNovos, metaNovos, novos.length);
+}
+
 function renderRanking(){
-  var sorted=RANKING.slice().sort(function(a,b){return b.pct-a.pct;});
-  document.getElementById('rank-grid').innerHTML=sorted.map(function(r){
+  // Mapear tipo por vendedor a partir dos deals
+  var tipoVendedor={};
+  DEALS.forEach(function(d){ if(d.vendedor) tipoVendedor[d.vendedor]=d.tipo; });
+
+  function buildCards(lista){
+    return lista.sort(function(a,b){return b.pct-a.pct;}).map(function(r){
     var p=r.pct;
     var bw=Math.min(p,100);
     var bc=barColor(p);
@@ -587,7 +736,24 @@ function renderRanking(){
       +'</div>'
       +'<div class="rbar-wrap"><div class="rbar-fill" style="width:'+bw+'%;background:'+bc+'"></div></div>'
       +'</div>';
-  }).join('');
+    }).join('');
+  }
+
+  var baseVendedores  = RANKING.filter(function(r){ return tipoVendedor[r.vendedor]==='Base'||r.vendedor.indexOf('Aline')>=0||r.vendedor.indexOf('Nathália')>=0||r.vendedor.indexOf('Pedro')>=0; });
+  var novosVendedores = RANKING.filter(function(r){ return tipoVendedor[r.vendedor]==='Novos'||r.vendedor.indexOf('Camila')>=0||r.vendedor.indexOf('Vanessa')>=0||r.vendedor.indexOf('Wesley')>=0||r.vendedor.indexOf('João')>=0; });
+
+  // Fallback: se a separação por deals não funcionar, usar nomes conhecidos
+  if(baseVendedores.length===0&&novosVendedores.length===0){
+    var baseNomes=['Aline','Nathália','Pedro'];
+    var novosNomes=['Camila','Vanessa','Wesley','João'];
+    baseVendedores  = RANKING.filter(function(r){ return baseNomes.some(function(n){ return r.vendedor.indexOf(n)>=0; }); });
+    novosVendedores = RANKING.filter(function(r){ return novosNomes.some(function(n){ return r.vendedor.indexOf(n)>=0; }); });
+  }
+
+  var gridBase  = document.getElementById('rank-grid-base');
+  var gridNovos = document.getElementById('rank-grid-novos');
+  if(gridBase)  gridBase.innerHTML  = buildCards(baseVendedores);
+  if(gridNovos) gridNovos.innerHTML = buildCards(novosVendedores);
 }
 
 // ── HISTÓRICO ──
@@ -976,8 +1142,10 @@ function renderVDS(nome){
 }
 
 function toggleMetodo(){
-  var b=document.getElementById('metodo-body');var t=document.getElementById('metodo-toggle');
-  b.classList.toggle('open');t.classList.toggle('open');
+  var b=document.getElementById('metodo-body');
+  var t=document.getElementById('metodo-toggle');
+  if(b)b.classList.toggle('open');
+  if(t)t.classList.toggle('open');
 }
 
 document.addEventListener('DOMContentLoaded',function(){
